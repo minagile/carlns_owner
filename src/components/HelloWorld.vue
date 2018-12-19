@@ -1,85 +1,21 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+    <div class="sidebar">
+      <div style="background:#525BFF;height: 70px;width: 100%;"></div>
+      <div class="face_area">
+        <img src="" alt="">
+        <div class="name">admin</div>
+      </div>
+      <div class="tab_area">
+        <li v-for="(o, i) in dataList" :key="i" @click="$router.push({name: o.link})">{{ o.label }}</li>
+      </div>
+    </div>
+    <div class="right">
+      <div class="top"></div>
+      <div class="body">
+        <router-view></router-view>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -88,26 +24,76 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      dataList: [
+        {
+          label: '首页',
+          link: 'Homepage',
+          img: '',
+          activeImg: ''
+        },
+        {
+          label: '保单列表',
+          link: 'PolicyList',
+          img: '',
+          activeImg: ''
+        },
+        {
+          label: '分期管理',
+          link: 'StageManagement',
+          img: '',
+          activeImg: ''
+        },
+        {
+          label: '决策支持',
+          link: 'DecisionSupport',
+          img: '',
+          activeImg: ''
+        },
+        {
+          label: '系统设置',
+          link: 'Setting',
+          img: '',
+          activeImg: ''
+        },
+        {
+          label: '注销',
+          link: 'LoginOut',
+          img: '',
+          activeImg: ''
+        }
+      ]
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style lang="less" scoped>
+.hello {
+  height: 100%;
+  display: flex;
+  .sidebar {
+    width: 225px;
+    height: 100%;
+    background: #fff;
+    .face_area {
+      height: 270px;
+    }
+    // float: left;
+  }
+  .right {
+    width: calc(100% - 225px);
+    // float: left;
+    .top {
+      // width: 100px;
+      height: 70px;
+      background: linear-gradient(142.68deg,rgba(89,98,255,1) 0%,rgba(130,101,255,1) 100%);
+    }
+    .body {
+      margin: 40px;
+      background: #fff;
+      height: calc(100% - 80px - 70px);
+      border-radius: 5px;
+    }
+  }
 }
 </style>
