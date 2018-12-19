@@ -3,11 +3,14 @@
     <div class="sidebar">
       <div style="background:#525BFF;height: 70px;width: 100%;"></div>
       <div class="face_area">
-        <img src="" alt="">
+        <img src="../assets/img/7.png" alt="">
         <div class="name">admin</div>
       </div>
       <div class="tab_area">
-        <li v-for="(o, i) in dataList" :key="i" @click="$router.push({name: o.link})">{{ o.label }}</li>
+        <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}">
+          <!-- <img src="../assets/img/add.png" alt=""> -->
+          {{ o.label }}
+        </li>
       </div>
     </div>
     <div class="right">
@@ -24,6 +27,7 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
+      num: 0,
       dataList: [
         {
           label: '首页',
@@ -63,6 +67,12 @@ export default {
         }
       ]
     }
+  },
+  methods: {
+    tab (o, i) {
+      this.num = i
+      this.$router.push({name: o.link})
+    }
   }
 }
 </script>
@@ -74,9 +84,36 @@ export default {
   .sidebar {
     width: 225px;
     height: 100%;
-    background: #fff;
+    background: #fff url(../assets/img/barbg.png) no-repeat right bottom;
+    // background-size: contain;
     .face_area {
-      height: 270px;
+      text-align: center;
+      img {
+        width: 89px;
+        height: 89px;
+        border: 1px solid rgba(33,211,226,1);
+        border-radius: 50%;
+        margin: 40px auto 0;
+      }
+      .name {
+        line-height: 50px;
+        color: #525BFF;
+      }
+    }
+    .tab_area {
+      padding-left: 43px;
+      li {
+        height: 54px;
+        line-height: 54px;
+        cursor: pointer;
+        color: #878787;
+        img {
+          vertical-align: middle;
+        }
+        &:hover {
+          color: #525BFF;
+        }
+      }
     }
     // float: left;
   }
