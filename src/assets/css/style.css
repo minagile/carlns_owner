@@ -150,3 +150,7 @@ button:hover {
 .el-tabs {
   height: 100%;
 }
+.el-table thead {
+  color: #333;
+  font-weight: normal;
+}

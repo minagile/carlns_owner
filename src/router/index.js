@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import Login from '@/components/Login'
+import Error from '@/components/Error'
 
 import Homepage from '@/components/pages/Homepage'
 import PolicyList from '@/components/pages/PolicyList'
@@ -49,6 +51,16 @@ export default new Router({
           component: LoginOut
         }
       ]
+    },
+    {
+      path: '/',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/Error',
+      name: 'Error',
+      component: Error
     }
   ]
 })
