@@ -2,8 +2,8 @@
   <!-- 分期模板 -->
   <div class="Instalment">
     <div class="delete">
-      <p class="add" @click="openDia('新增模板')">新增</p>
-      <p class="shanchu">删除</p>
+      <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
+      <p class="shanchu"><img src="../../../assets/img/delete.png" alt="">删除</p>
     </div>
 
     <div class="ower-table">

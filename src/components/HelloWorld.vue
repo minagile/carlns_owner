@@ -68,6 +68,10 @@ export default {
       ]
     }
   },
+  mounted () {
+    var barheight = document.documentElement.clientheight || document.body.clientHeight
+    document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
+  },
   methods: {
     tab (o, i) {
       this.num = i
@@ -83,7 +87,7 @@ export default {
   display: flex;
   .sidebar {
     width: 225px;
-    height: 100%;
+    // min-height: 100%;
     background: #fff url(../assets/img/barbg.png) no-repeat right bottom;
     // background-size: contain;
     .face_area {
@@ -120,6 +124,7 @@ export default {
   .right {
     width: calc(100% - 225px);
     // float: left;
+    // background: #fff;
     .top {
       // width: 100px;
       height: 70px;

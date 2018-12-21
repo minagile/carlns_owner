@@ -35,6 +35,10 @@
   text-align: right;
   cursor: pointer;
 }
+.delete img {
+  vertical-align: middle;
+  margin-right: 5px;
+}
 .delete .add {
   float: left;
 }
@@ -155,4 +159,8 @@ button:hover {
 }
 .cellStyle {
   border: none!important;
+}
+.el-table thead {
+  color: #333;
+  font-weight: normal;
 }

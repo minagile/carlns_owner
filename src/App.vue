@@ -15,8 +15,9 @@ export default {
 html, body {height: 100%;}
 a {text-decoration: none;}
 li {list-style: none;}
+i, b {font-weight: normal;font-style: normal;}
 #app {
-  height: 100%;
+  min-height: 100%;
   background: #F4F8F9;
 }
 </style>

@@ -22,7 +22,7 @@
     </div>
 
     <div class="delete">
-      删除
+      <img src="../../assets/img/delete.png" alt="">删除
     </div>
 
     <div class="ower-table">
