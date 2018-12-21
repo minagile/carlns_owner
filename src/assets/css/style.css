@@ -167,3 +167,10 @@ button:hover {
   color: #333;
   font-weight: normal;
 }
+.dialog-footer {
+  width: 336px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+}

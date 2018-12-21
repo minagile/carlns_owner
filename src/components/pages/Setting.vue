@@ -8,8 +8,12 @@
     <el-tab-pane label="险种模板" name="second" :lazy="true">
       <typesOfInsurance/>
     </el-tab-pane>
-    <el-tab-pane label="账号管理" name="third" :lazy="true">账号管理</el-tab-pane>
-    <el-tab-pane label="短信模板" name="fourth" :lazy="true">短信模板</el-tab-pane>
+    <el-tab-pane label="账号管理" name="third" :lazy="true">
+      <account-number/>
+    </el-tab-pane>
+    <el-tab-pane label="短信模板" name="fourth" :lazy="true">
+      <short-message/>
+    </el-tab-pane>
   </el-tabs>
   </div>
 </template>
@@ -17,6 +21,8 @@
 <script>
 import Instalment from './setting/Instalment'
 import TypesOfInsurance from './setting/typesOfInsurance'
+import AccountNumber from './setting/accountNumber'
+import ShortMessage from './setting/shortMessage'
 export default {
   name: 'Setting',
   data () {
@@ -31,7 +37,9 @@ export default {
   },
   components: {
     Instalment,
-    TypesOfInsurance
+    TypesOfInsurance,
+    AccountNumber,
+    ShortMessage
   }
 }
 </script>

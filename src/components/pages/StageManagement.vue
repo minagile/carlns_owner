@@ -100,10 +100,10 @@
       width="30%">
       <div class="dialog-header">详情</div>
       <span>这是一段信息</span>
-      <span slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
+      </div>
     </el-dialog>
   </div>
 </template>
