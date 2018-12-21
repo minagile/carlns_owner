@@ -191,9 +191,9 @@ export default {
 
       //   }).then(res => {
       //     if (res.code === 0) {
-      //       this.$message.success(res.code)
+      //       this.$notify.success(res.code)
       //     } else if (res.code === 1) {
-      //       this.$message.error(res.code)
+      //       this.$notify.error(res.code)
       //     }
       //   })
       // }
@@ -202,7 +202,7 @@ export default {
     deleteData () {
       let id = []
       if (this.multipleSelection.length < 1) {
-        this.$message({
+        this.$notify({
           type: 'warning',
           message: '未选择信息!'
         })
@@ -215,12 +215,12 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
+          this.$notify({
             type: 'success',
             message: '删除成功!'
           })
         }).catch(() => {
-          this.$message({
+          this.$notify({
             type: 'info',
             message: '已取消删除'
           })
