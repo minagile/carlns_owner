@@ -76,10 +76,23 @@ export default {
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
   },
   methods: {
+    open7 () {
+      this.$confirm('是否退出当前帐号, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        this.$notify({
+          type: 'success',
+          title: '注销登录'
+        })
+      })
+    },
     tab (o, i) {
       this.num = i
       if (i === 5) {
-        alert('tuichu')
+        this.open7()
       } else {
         this.$router.push({name: o.link})
       }
