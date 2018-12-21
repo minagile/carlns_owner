@@ -42,6 +42,9 @@
 .delete .add {
   float: left;
 }
+.delete .shanchu {
+  float: right;
+}
 .ower-table {
   width: 100%;
   margin-bottom: 20px;
@@ -163,4 +166,11 @@ button:hover {
 .el-table thead {
   color: #333;
   font-weight: normal;
+}
+.dialog-footer {
+  width: 336px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
 }

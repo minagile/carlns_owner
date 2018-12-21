@@ -1,6 +1,7 @@
+
 <template>
-  <!-- 分期模板 -->
-  <div class="Instalment">
+  <!-- 账号管理 -->
+  <div class="ShortMessage">
     <div class="delete">
       <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
       <p class="shanchu" @click="deleteData"><img src="../../../assets/img/delete.png" alt="">删除</p>
@@ -19,29 +20,22 @@
         </el-table-column>
         <el-table-column
           prop="date"
-          label="模板名称">
+          label="标题">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="期数">
+          label="内容">
         </el-table-column>
         <el-table-column
           prop="address"
-          label="首付款">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="服务费">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="利率"
-          min-width="300">
+          label="类型"
+          width="500">
         </el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板')">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.name)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,21 +60,22 @@
       <div class="dialog-header">{{title}}</div>
       <div class="form">
         <el-form ref="form" :model="form" label-width="100px">
-          <el-form-item label="模板名称：">
+          <el-form-item label="短信标题：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="期数：">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item label="短信内容：">
+            <el-input v-model="form.name" type="textarea" rows="5"></el-input>
           </el-form-item>
-          <el-form-item label="首付款：">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="服务费：">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="利率：">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
+          <el-form-item label="活动区域：">
+            <el-select v-model="value" placeholder="请选择" style="width:100%">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+        </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -93,7 +88,7 @@
 
 <script>
 export default {
-  name: 'Instalment',
+  name: 'ShortMessage',
   data () {
     return {
       value: '',
@@ -226,13 +221,31 @@ export default {
           })
         })
       }
+    },
+    // 删除
+    toDelete (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.Instalment {
+.ShortMessage {
   padding: 0 30px 30px 30px;
   box-sizing: border-box;
   overflow: auto;

@@ -1,8 +1,9 @@
+
 <template>
-  <!-- 分期模板 -->
-  <div class="Instalment">
+  <!-- 账号管理 -->
+  <div class="AccountNumber">
     <div class="delete">
-      <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
+      <p class="add" @click="openDia('新增账号')"><img src="../../../assets/img/add.png" alt="">新增</p>
       <p class="shanchu" @click="deleteData"><img src="../../../assets/img/delete.png" alt="">删除</p>
     </div>
 
@@ -19,29 +20,22 @@
         </el-table-column>
         <el-table-column
           prop="date"
-          label="模板名称">
+          label="账号">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="期数">
+          label="密码">
         </el-table-column>
         <el-table-column
           prop="address"
-          label="首付款">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="服务费">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="利率"
-          min-width="300">
+          label="添加日期"
+          width="500">
         </el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板')">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('设置权限')">设置权限</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.name)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -93,7 +87,7 @@
 
 <script>
 export default {
-  name: 'Instalment',
+  name: 'AccountNumber',
   data () {
     return {
       value: '',
@@ -226,13 +220,31 @@ export default {
           })
         })
       }
+    },
+    // 删除
+    toDelete (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.Instalment {
+.AccountNumber {
   padding: 0 30px 30px 30px;
   box-sizing: border-box;
   overflow: auto;
