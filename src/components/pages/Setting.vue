@@ -5,7 +5,9 @@
     <el-tab-pane label="分期模板" name="first" :lazy="true">
       <instalment />
     </el-tab-pane>
-    <el-tab-pane label="险种模板" name="second" :lazy="true">险种模板</el-tab-pane>
+    <el-tab-pane label="险种模板" name="second" :lazy="true">
+      <typesOfInsurance/>
+    </el-tab-pane>
     <el-tab-pane label="账号管理" name="third" :lazy="true">账号管理</el-tab-pane>
     <el-tab-pane label="短信模板" name="fourth" :lazy="true">短信模板</el-tab-pane>
   </el-tabs>
@@ -14,6 +16,7 @@
 
 <script>
 import Instalment from './setting/Instalment'
+import TypesOfInsurance from './setting/typesOfInsurance'
 export default {
   name: 'Setting',
   data () {
@@ -27,7 +30,8 @@ export default {
     }
   },
   components: {
-    Instalment
+    Instalment,
+    TypesOfInsurance
   }
 }
 </script>

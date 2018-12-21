@@ -35,6 +35,10 @@
   text-align: right;
   cursor: pointer;
 }
+.delete img {
+  vertical-align: middle;
+  margin-right: 5px;
+}
 .delete .add {
   float: left;
 }
@@ -145,10 +149,16 @@ button:hover {
 }
 .el-tabs__content {
   overflow: auto;
-  /* height: calc(100% - 75px); */
+  height: calc(100% - 75px);
 }
 .el-tabs {
   height: 100%;
+}
+.el-dialog__body {
+  padding: 0;
+}
+.cellStyle {
+  border: none!important;
 }
 .el-table thead {
   color: #333;
