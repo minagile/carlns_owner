@@ -20,6 +20,7 @@
       <p>
         <el-button v-for="(o, i) in list" :class="{all: num === i}" :key="i" @click="tab(i)">{{ o }}</el-button>
       </p>
+      <div class="charts"></div>
     </div>
   </div>
 </template>
@@ -46,6 +47,7 @@ export default {
 
 <style lang="less" scoped>
 .DecisionSupport {
+  min-height: 100%;
   .header {
     height: 148px;
     padding-top: 13px;
@@ -91,6 +93,9 @@ export default {
         }
       }
     }
+  }
+  .charts {
+    height: 530px;
   }
 }
 </style>

@@ -77,7 +77,11 @@ export default {
   methods: {
     tab (o, i) {
       this.num = i
-      this.$router.push({name: o.link})
+      if (i === 5) {
+        alert('tuichu')
+      } else {
+        this.$router.push({name: o.link})
+      }
     }
   }
 }
@@ -92,6 +96,7 @@ export default {
     display: flex;
     .sidebar {
       width: 225px;
+      position: fixed;
       // min-height: 100%;
       background: #fff url(../assets/img/barbg.png) no-repeat right bottom;
       // background-size: contain;
@@ -127,16 +132,19 @@ export default {
       // float: left;
     }
     .right {
+      padding-left: 225px;
       width: calc(100% - 225px);
       // float: left;
       // background: #fff;
       .top {
-        // width: 100px;
+        width: 100%;
+        z-index: 1;
+        position: fixed; 
         height: 70px;
         background: linear-gradient(142.68deg,rgba(89,98,255,1) 0%,rgba(130,101,255,1) 100%);
       }
       .body {
-        margin: 40px;
+        margin: 110px 40px 40px;
         background: #fff;
         height: calc(100% - 80px - 70px);
         border-radius: 5px;
