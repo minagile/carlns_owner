@@ -3,7 +3,7 @@
   <div class="TypesOfInsurance">
     <div class="delete">
       <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
-      <p class="shanchu"><img src="../../../assets/img/delete.png" alt="">删除</p>
+      <p class="shanchu" @click="deleteData"><img src="../../../assets/img/delete.png" alt="">删除</p>
     </div>
 
     <div class="ower-table">
@@ -96,7 +96,7 @@
           <el-table-column
             label="金额">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.value" placeholder="请选择" @change=ccc>
+              <el-select v-model="scope.row.value" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -159,19 +159,19 @@ export default {
     openDia (msg) {
       this.title = msg
       this.dialogVisible = true
-      // if (msg === '新增模板') {
-      //   this.form = {}
-      // } else {
-      //   this.$post('', {
+      if (msg === '新增模板') {
+        this.form = {}
+      } else {
+        this.$post('', {
 
-      //   }).then(res => {
-      //     if (res.code === 0) {
-      //       this.$message.success(res.code)
-      //     } else if (res.code === 1) {
-      //       this.$message.error(res.code)
-      //     }
-      //   })
-      // }
+        }).then(res => {
+          if (res.code === 0) {
+            this.$message.success(res.code)
+          } else if (res.code === 1) {
+            this.$message.error(res.code)
+          }
+        })
+      }
     },
     // 删除
     toDelete (id) {
@@ -191,8 +191,34 @@ export default {
         })
       })
     },
-    ccc () {
-      console.log(this.tableData)
+    // 多选删除
+    deleteData () {
+      let id = []
+      if (this.multipleSelection.length < 1) {
+        this.$message({
+          type: 'warning',
+          message: '未选择信息!'
+        })
+      } else {
+        this.multipleSelection.forEach(v => {
+          id.push(v.id)
+        })
+        this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      }
     }
   }
 }

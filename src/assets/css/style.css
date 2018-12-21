@@ -42,6 +42,9 @@
 .delete .add {
   float: left;
 }
+.delete .shanchu {
+  float: right;
+}
 .ower-table {
   width: 100%;
   margin-bottom: 20px;
