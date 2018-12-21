@@ -9,7 +9,7 @@
         </div>
         <div class="tab_area">
           <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}">
-            <!-- <img src="../assets/img/add.png" alt=""> -->
+            <img :src="num === i ? o.activeImg : o.img" alt="">
             {{ o.label }}
           </li>
         </div>
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { img } from '../assets/js/img.js'
 export default {
   name: 'HelloWorld',
   data () {
@@ -34,38 +35,38 @@ export default {
         {
           label: '首页',
           link: 'Homepage',
-          img: '',
-          activeImg: ''
+          img: img.list1,
+          activeImg: img.active1
         },
         {
           label: '保单列表',
           link: 'PolicyList',
-          img: '',
-          activeImg: ''
+          img: img.list2,
+          activeImg: img.active2
         },
         {
           label: '分期管理',
           link: 'StageManagement',
-          img: '',
-          activeImg: ''
+          img: img.list3,
+          activeImg: img.active3
         },
         {
           label: '决策支持',
           link: 'DecisionSupport',
-          img: '',
-          activeImg: ''
+          img: img.list4,
+          activeImg: img.active4
         },
         {
           label: '系统设置',
           link: 'Setting',
-          img: '',
-          activeImg: ''
+          img: img.list5,
+          activeImg: img.active5
         },
         {
           label: '注销',
           link: 'LoginOut',
-          img: '',
-          activeImg: ''
+          img: img.list6,
+          activeImg: img.active6
         }
       ]
     }
@@ -123,6 +124,8 @@ export default {
           color: #878787;
           img {
             vertical-align: middle;
+            margin-top: -4px;
+            margin-right: 10px;
           }
           &:hover {
             color: #525BFF;
