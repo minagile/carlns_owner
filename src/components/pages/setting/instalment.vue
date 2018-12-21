@@ -65,20 +65,20 @@
       width="683px">
       <div class="dialog-header">{{title}}</div>
       <div class="form">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="活动名称：">
+        <el-form ref="form" :model="form" label-width="100px">
+          <el-form-item label="模板名称：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="活动名称：">
+          <el-form-item label="期数：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="活动名称：">
+          <el-form-item label="首付款：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="活动名称：">
+          <el-form-item label="服务费：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="活动名称：">
+          <el-form-item label="利率：">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
         </el-form>
@@ -98,6 +98,9 @@ export default {
     return {
       value: '',
       options: [],
+      multipleSelection: [],
+      dialogVisible: false,
+      title: '新增模板',
       tableData: [
         {
           date: '2016-05-02',
@@ -111,9 +114,6 @@ export default {
         pageSizes: [10, 20, 30, 40],
         total: 10
       },
-      multipleSelection: [],
-      dialogVisible: false,
-      title: '新增模板',
       form: {
         name: ''
       }
@@ -135,9 +135,19 @@ export default {
     openDia (msg) {
       this.title = msg
       this.dialogVisible = true
-      if (msg === '新增模板') {
+      // if (msg === '新增模板') {
+      //   this.form = {}
+      // } else {
+      //   this.$post('', {
 
-      }
+      //   }).then(res => {
+      //     if (res.code === 0) {
+      //       this.$message.success(res.code)
+      //     } else if (res.code === 1) {
+      //       this.$message.error(res.code)
+      //     }
+      //   })
+      // }
     }
   }
 }
