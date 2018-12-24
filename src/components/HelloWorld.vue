@@ -79,9 +79,7 @@ export default {
     open7 () {
       this.$confirm('是否退出当前帐号, 是否继续?', '提示', {
         confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
+        cancelButtonText: '取消'
       }).then(() => {
         this.$notify({
           type: 'success',

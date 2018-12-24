@@ -20,12 +20,24 @@
       <p>
         <el-button v-for="(o, i) in list" :class="{all: num === i}" :key="i" @click="tab(i)">{{ o }}</el-button>
       </p>
-      <div class="charts"></div>
+      <div class="charts">
+        <div id="bar" style="width: 100%;height: 100%;"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+var echarts = require('echarts/lib/echarts')
+// 引入柱状图
+require('echarts/lib/chart/bar')
+require('echarts/lib/chart/pie')
+require('echarts/lib/chart/line')
+// 引入提示框和标题组件
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/title')
+require('echarts/lib/component/legend')
+require('echarts/lib/component/dataZoom')
 export default {
   name: 'DecisionSupport',
   data () {
@@ -37,7 +49,59 @@ export default {
       num: 0
     }
   },
+  mounted () {
+    this.getBarcharts()
+  },
   methods: {
+    // 柱状图
+    getBarcharts () {
+      var myChart = echarts.init(document.getElementById('bar'))
+      myChart.setOption({
+        color: ['#5962FF'],
+        grid: {
+          left: '3%',
+          right: '3%',
+          top: '10%',
+          bottom: '10%'
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          axisLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: {
+            color: '#BABABA'
+          },
+          min: 'dateMin'
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: {
+            color: '#BABABA'
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dotted'
+            }
+          }
+        },
+        series: [{
+          data: [0, 10, 5, 15, 8, 16, 18],
+          type: 'line',
+          smooth: true,
+          symbolSize: 0,
+          lineStyle: {
+            width: 6,
+            shadowBlur: 30,
+            shadowColor: 'rgba(0, 0, 0, 0.3)',
+            shadowOffsetY: 8
+          }
+        }]
+      })
+    },
     tab (i) {
       this.num = i
     }

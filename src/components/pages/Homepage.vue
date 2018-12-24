@@ -34,9 +34,9 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <el-button>按周</el-button>
-          <el-button>按周</el-button>
-          <el-button>按周</el-button>
+          <el-button @click="changeLineCharts(1)" :class="{active: num === 1}">按月</el-button>
+          <el-button @click="changeLineCharts(2)" :class="{active: num === 2}">按周</el-button>
+          <el-button @click="changeLineCharts(3)" :class="{active: num === 3}">按天</el-button>
           <span style="float:right;padding:35px 30px 0 0;">金额</span>
           <div id="line" style="width: 100%;height:300px;"></div>
         </div>
@@ -74,7 +74,7 @@
         </el-table-column>
         <el-table-column align="center">
           <template slot-scope="scope">
-            <img src="../../assets/img/delete.png" alt="">
+            <img src="../../assets/img/delete.png" @click="open7">
           </template>
         </el-table-column>
       </el-table>
@@ -101,55 +101,8 @@ export default {
         date: '2016-05-02',
         name: '王小虎',
         address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }]
+      }],
+      num: 1
     }
   },
   mounted () {
@@ -157,10 +110,27 @@ export default {
     this.getLinecharts()
   },
   methods: {
+    // 折线图时间选择
+    changeLineCharts (i) {
+      this.num = i
+    },
+    // 表格删除
+    open7 () {
+      this.$confirm('是否删除此订单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        this.$notify({
+          type: 'success',
+          title: '删除成功'
+        })
+      })
+    },
+    // 折线图
     getLinecharts () {
       var myChart = echarts.init(document.getElementById('line'))
       myChart.setOption({
-        color: ['#5962FF'],
+        color: ['#5962FF', '#F7622E'],
         grid: {
           left: '3%',
           right: '3%',
@@ -191,20 +161,35 @@ export default {
             }
           }
         },
-        series: [{
-          data: [0, 10, 5, 15, 8, 16, 18],
-          type: 'line',
-          smooth: true,
-          symbolSize: 0,
-          lineStyle: {
-            width: 6,
-            shadowBlur: 30,
-            shadowColor: 'rgba(0, 0, 0, 0.3)',
-            shadowOffsetY: 8
+        series: [
+          {
+            data: [0, 10, 5, 15, 8, 16, 18],
+            type: 'line',
+            // smooth: true,
+            symbolSize: 0,
+            lineStyle: {
+              width: 6,
+              shadowBlur: 30,
+              shadowColor: 'rgba(0, 0, 0, 0.3)',
+              shadowOffsetY: 8
+            }
+          },
+          {
+            data: [0, 11, 5, 18, 8, 20, 18],
+            type: 'line',
+            // smooth: true,
+            symbolSize: 0,
+            lineStyle: {
+              width: 6,
+              shadowBlur: 30,
+              shadowColor: 'rgba(0, 0, 0, 0.3)',
+              shadowOffsetY: 8
+            }
           }
-        }]
+        ]
       })
     },
+    // 饼状图
     getPiecharts () {
       var myChart = echarts.init(document.getElementById('main'))
       myChart.setOption({
@@ -228,7 +213,15 @@ export default {
           x: 'center',
           // y: 'bottom',
           bottom: '20',
-          data: ['微信', '渠道', '公司', '视频广告']
+          data: ['微信', '渠道', '公司', '视频广告'],
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 10,
+          itemGap: 20,
+          textStyle: {
+            fontSize: 12,
+            padding: [0, 0, 0, 6]
+          }
         },
         series: [
           {
@@ -309,6 +302,14 @@ export default {
     height: 400px;
     .el-button {
       margin: 20px 0 35px 20px;
+      color: #5962FF;
+      background: #fff;
+      border-color: #fff;
+      &.active {
+        background: #5962FF;
+        border-color: #5962FF;
+        color: #fff;
+      }
     }
   }
   .table {
@@ -320,6 +321,16 @@ export default {
       color: #777777;
       font-size: 14px;
       font-family: MicrosoftYaHei;
+      img {
+        cursor: pointer;
+        border: 1px solid #E1E1E1;
+        border-radius: 50%;
+        padding: 10px;
+        width: 16px;
+        &:hover {
+          border-color: #777777;
+        }
+      }
     }
   }
   .el-table tr {
