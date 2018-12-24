@@ -153,7 +153,7 @@ export default {
       .top {
         width: 100%;
         z-index: 1;
-        position: fixed; 
+        position: fixed;
         height: 70px;
         background: linear-gradient(142.68deg,rgba(89,98,255,1) 0%,rgba(130,101,255,1) 100%);
       }
