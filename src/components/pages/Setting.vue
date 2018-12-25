@@ -46,7 +46,7 @@ export default {
 
 <style lang="less" scoped>
 .Setting {
-  height: 100%;
+  min-height: 101%;
   // padding: 20px 30px 35px 30px;
   box-sizing: border-box;
   // overflow: auto;

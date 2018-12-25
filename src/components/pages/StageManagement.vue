@@ -154,7 +154,7 @@ export default {
 
 <style lang="less" scoped>
 .StageManagement {
-  height: 100%;
+  height: 101%;
   padding: 35px 30px;
   box-sizing: border-box;
   overflow: auto;
