@@ -57,50 +57,80 @@ export default {
     getBarcharts () {
       var myChart = echarts.init(document.getElementById('bar'))
       myChart.setOption({
-        color: ['#5962FF'],
+        legend: {
+          show: false
+        },
+        tooltip: {
+          show: true,
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
         grid: {
-          left: '3%',
-          right: '3%',
-          top: '10%',
-          bottom: '10%'
+          top: '20%',
+          left: '18%',
+          height: '60%',
+          width: '64%',
+          containLabel: true
         },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisLine: { show: false },
-          axisTick: { show: false },
-          axisLabel: {
-            color: '#BABABA'
-          },
-          min: 'dateMin'
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: { show: false },
-          axisTick: { show: false },
-          axisLabel: {
-            color: '#BABABA'
-          },
-          splitLine: {
-            lineStyle: {
-              type: 'dotted'
+        xAxis: [
+          {
+            type: 'category',
+            data: [1, 2, 3, 4, 5],
+            axisTick: {
+              alignWithLabel: true,
+              show: false,
+              interval: 0
+            },
+            axisLabel: {
+              interval: 0
             }
           }
-        },
-        series: [{
-          data: [0, 10, 5, 15, 8, 16, 18],
-          type: 'line',
-          smooth: true,
-          symbolSize: 0,
-          lineStyle: {
-            width: 6,
-            shadowBlur: 30,
-            shadowColor: 'rgba(0, 0, 0, 0.3)',
-            shadowOffsetY: 8
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: 'y',
+            nameGap: 30,
+            axisLine: {
+              lineStyle: {
+                color: '#C6C8C9'
+              }
+            },
+            axisTick: { show: false },
+            axisLabel: {
+              color: '#666'
+            },
+            splitLine: {
+              lineStyle: {
+                type: 'dotted'
+              }
+            }
           }
-        }]
-      })
+        ],
+        series: [
+          {
+            name: '空置房屋',
+            type: 'bar',
+            stack: '总量',
+            barWidth: '50px',
+            data: [2, 3, 4, 5, 6],
+            label: {
+              show: true
+            },
+            itemStyle: {
+              normal: {
+                color: function (params) {
+                  // 首先定义一个数组
+                  var colorList = ['#F0788F', '#DE76CA', '#9972E7', '#6E72EA', '#F0788F', '#DE76CA', '#9972E7', '#6E72EA']
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          }
+        ]
+      }, true)
     },
     tab (i) {
       this.num = i

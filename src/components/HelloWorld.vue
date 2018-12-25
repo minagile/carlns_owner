@@ -81,6 +81,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
+        this.$router.push('/')
         this.$notify({
           type: 'success',
           title: '注销登录'
