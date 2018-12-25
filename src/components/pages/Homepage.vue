@@ -5,7 +5,7 @@
       <el-col :span="7">
         <div class="grid-content">
           <div class="left">
-            <i><b>53</b>笔</i>
+            <i><b>{{ order }}</b> 笔</i>
             <span>新增订单</span>
           </div>
           <img src="../../assets/img/pic.png" alt="">
@@ -14,8 +14,8 @@
       <el-col :span="7">
         <div class="grid-content">
           <div class="left">
-            <i><b>53</b>笔</i>
-            <span>新增订单</span>
+            <i><b>{{ order1 }}</b> 元</i>
+            <span>分期总费用</span>
           </div>
           <img src="../../assets/img/pic.png" alt="">
         </div>
@@ -23,8 +23,8 @@
       <el-col :span="7">
         <div class="grid-content">
           <div class="left">
-            <i><b>53</b>笔</i>
-            <span>新增订单</span>
+            <i><b>{{ order2 }}</b> 元</i>
+            <span>总利润</span>
           </div>
           <img src="../../assets/img/pic.png" alt="">
         </div>
@@ -33,12 +33,11 @@
 
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
-        <div class="grid-content">
+        <div class="grid-content" style="position:relative;">
           <el-button @click="changeLineCharts(1)" :class="{active: num === 1}">按月</el-button>
           <el-button @click="changeLineCharts(2)" :class="{active: num === 2}">按周</el-button>
           <el-button @click="changeLineCharts(3)" :class="{active: num === 3}">按天</el-button>
-          <span style="float:right;padding:35px 30px 0 0;">金额</span>
-          <div id="line" style="width: 100%;height:300px;"></div>
+          <div id="line" style="width: 100%;height:100%;position:absolute;left:0;top:0;"></div>
         </div>
       </el-col>
       <el-col :span="7">
@@ -55,16 +54,16 @@
         max-height="700"
         :data="tableData"
         style="width: 96%;margin: 0 auto;">
-        <el-table-column prop="date" label="订单号"></el-table-column>
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="name" label="车牌"></el-table-column>
-        <el-table-column prop="name" label="订单来源"></el-table-column>
-        <el-table-column prop="name" label="投保金额"></el-table-column>
-        <el-table-column prop="name" label="分期状态"></el-table-column>
-        <el-table-column prop="name" label="还款日期"></el-table-column>
+        <el-table-column prop="orderNo" label="订单号"></el-table-column>
+        <el-table-column prop="userName" label="姓名"></el-table-column>
+        <el-table-column prop="carNo" label="车牌"></el-table-column>
+        <el-table-column prop="orderResource" label="订单来源"></el-table-column>
+        <el-table-column prop="total" label="投保金额"></el-table-column>
+        <el-table-column prop="installmentState" label="分期状态"></el-table-column>
+        <el-table-column prop="repaymentDate" label="还款日期"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <span style="color:red;">已逾期1天</span>
+            <span style="color:red;">{{scope.row.state}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center">
@@ -74,7 +73,7 @@
         </el-table-column>
         <el-table-column align="center">
           <template slot-scope="scope">
-            <img src="../../assets/img/delete.png" @click="open7">
+            <img src="../../assets/img/delete.png" @click="open7(scope.row.orderId)">
           </template>
         </el-table-column>
       </el-table>
@@ -97,44 +96,107 @@ export default {
   name: 'Homepage',
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
-      num: 1
+      tableData: [],
+      num: 1,
+      order: 0,
+      order1: 0,
+      order2: 0
     }
   },
   mounted () {
-    this.getPiecharts()
-    this.getLinecharts()
+    this.getData('newOrderCount')
+    this.getData('totalCostOfInstallments')
+    this.getData('grossProfit')
+    this.getChartData('monthLine')
+    this.getChartData('sourceOfUserTop5')
+    // this.getData('deleteByOrder')
+    this.getData('withinTheTimeLimitOrders', '')
   },
   methods: {
+    getData (data, order) {
+      var params = {}
+      if (data === 'withinTheTimeLimitOrders') params = { orderby: order }
+      this.$fetch('/index/' + data, params).then(res => {
+        if (res.code === 0) {
+          // console.log(res)
+          if (data === 'withinTheTimeLimitOrders') this.tableData = res.data
+          if (data === 'newOrderCount') this.order = res.data
+          if (data === 'totalCostOfInstallments') this.order1 = res.data
+          if (data === 'grossProfit') this.order2 = res.data
+        }
+      })
+    },
+    getChartData (data) {
+      this.$fetch('/index/' + data).then(res => {
+        if (res.code === 0) {
+          if (data === 'sourceOfUserTop5') {
+            this.getPiecharts(res.data)
+          } else {
+            this.getLinecharts(res.data)
+          }
+        }
+      })
+    },
     // 折线图时间选择
     changeLineCharts (i) {
       this.num = i
+      if (i === 1) {
+        this.getChartData('monthLine')
+      }
+      if (i === 2) {
+        this.getChartData('weekLine')
+      }
+      if (i === 3) {
+        this.getChartData('dayLine')
+      }
     },
     // 表格删除
-    open7 () {
+    open7 (id) {
       this.$confirm('是否删除此订单, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        this.$notify({
-          type: 'success',
-          title: '删除成功'
+        this.$fetch('/index/deleteByOrder', { orderId: id }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              title: '删除成功'
+            })
+          } else {
+            this.$notify({
+              type: 'error',
+              title: res.msg
+            })
+          }
         })
       })
     },
     // 折线图
-    getLinecharts () {
+    getLinecharts (data) {
       var myChart = echarts.init(document.getElementById('line'))
       myChart.setOption({
         color: ['#5962FF', '#F7622E'],
+        legend: {
+          // orient: 'vertical',
+          // x: 'right',
+          // y: 'bottom',
+          top: '35',
+          right: '20',
+          // data: [data[0].name, data[1].name],
+          data: ['总分期金额', '还款金额'],
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 10,
+          itemGap: 20,
+          textStyle: {
+            fontSize: 12,
+            padding: [0, 0, 0, 6]
+          }
+        },
         grid: {
-          left: '3%',
+          left: '5%',
           right: '3%',
-          top: '10%',
+          top: '30%',
           bottom: '10%'
         },
         xAxis: {
@@ -163,9 +225,11 @@ export default {
         },
         series: [
           {
-            data: [0, 10, 5, 15, 8, 16, 18],
+            data: data[0].data,
             type: 'line',
             // smooth: true,
+            // name: data[0].name,
+            name: '总分期金额',
             symbolSize: 0,
             lineStyle: {
               width: 6,
@@ -175,9 +239,11 @@ export default {
             }
           },
           {
-            data: [0, 11, 5, 18, 8, 20, 18],
+            data: data[1].data,
             type: 'line',
             // smooth: true,
+            // name: data[1].name,
+            name: '还款金额',
             symbolSize: 0,
             lineStyle: {
               width: 6,
@@ -190,7 +256,11 @@ export default {
       })
     },
     // 饼状图
-    getPiecharts () {
+    getPiecharts (data) {
+      let X = []
+      data.forEach(v => {
+        X.push(v.name)
+      })
       var myChart = echarts.init(document.getElementById('main'))
       myChart.setOption({
         color: ['#5962FF', '#2D38FF', '#FFC700', '#F7622E'],
@@ -213,7 +283,7 @@ export default {
           x: 'center',
           // y: 'bottom',
           bottom: '20',
-          data: ['微信', '渠道', '公司', '视频广告'],
+          data: X,
           itemWidth: 10,
           itemHeight: 10,
           borderRadius: 10,
@@ -247,12 +317,7 @@ export default {
                 show: false
               }
             },
-            data: [
-              {value: 335, name: '微信'},
-              {value: 310, name: '渠道'},
-              {value: 234, name: '公司'},
-              {value: 135, name: '视频广告'}
-            ]
+            data: data
           }
         ]
       })
@@ -301,6 +366,8 @@ export default {
   .center .grid-content {
     height: 400px;
     .el-button {
+      position: relative;
+      z-index: 3;
       margin: 20px 0 35px 20px;
       color: #5962FF;
       background: #fff;
