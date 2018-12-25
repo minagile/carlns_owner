@@ -153,12 +153,12 @@ export default {
       .top {
         width: 100%;
         z-index: 1;
-        position: fixed; 
+        position: fixed;
         height: 70px;
         background: linear-gradient(142.68deg,rgba(89,98,255,1) 0%,rgba(130,101,255,1) 100%);
       }
       .body {
-        margin: 110px 40px 40px;
+        margin: 105px 40px 40px;
         background: #fff;
         height: calc(100% - 80px - 70px);
         border-radius: 5px;

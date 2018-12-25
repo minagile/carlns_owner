@@ -45,7 +45,7 @@ export default {
       } else {
         this.check = false
       }
-    } 
+    }
   }
 }
 </script>
