@@ -18,30 +18,30 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="templateName"
           label="模板名称">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="stages"
           label="期数">
         </el-table-column>
         <el-table-column
-          prop="address"
+          prop="downPayment"
           label="首付款">
         </el-table-column>
         <el-table-column
-          prop="address"
+          prop="platform"
           label="服务费">
         </el-table-column>
         <el-table-column
-          prop="address"
+          prop="firstRate"
           label="利率"
           min-width="300">
         </el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板')">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.rateId)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,25 +67,25 @@
       <div class="form">
         <el-form ref="form" :model="form" label-width="100px">
           <el-form-item label="模板名称：">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.templateName"></el-input>
           </el-form-item>
           <el-form-item label="期数：">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.stages" type="number"></el-input>
           </el-form-item>
           <el-form-item label="首付款：">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.downPayment" type="number"></el-input>
           </el-form-item>
           <el-form-item label="服务费：">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.platform" type="number"></el-input>
           </el-form-item>
           <el-form-item label="利率：">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.firstRate" type="number"></el-input>
           </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -101,62 +101,7 @@ export default {
       multipleSelection: [],
       dialogVisible: false,
       title: '新增模板',
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 0
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 1
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 2
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 3
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 4
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 5
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 6
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 7
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          id: 8
-        }
-      ],
+      tableData: [],
       pages: {
         currentPage: 1,
         pageSize: 10,
@@ -164,39 +109,50 @@ export default {
         total: 10
       },
       form: {
-        name: ''
-      }
+        templateName: '',
+        stages: '',
+        downPayment: '',
+        platform: '',
+        firstRate: ''
+      },
+      id: null
     }
   },
   mounted () {
-    this.pages.total = this.tableData.length
+    this.getData()
   },
   methods: {
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
+      this.pages.pageSize = val
+      this.getData()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
+      this.pages.currentPage = val
+      this.getData()
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
-    openDia (msg) {
+    openDia (msg, id) {
       this.title = msg
       this.dialogVisible = true
-      // if (msg === '新增模板') {
-      //   this.form = {}
-      // } else {
-      //   this.$post('', {
-
-      //   }).then(res => {
-      //     if (res.code === 0) {
-      //       this.$notify.success(res.code)
-      //     } else if (res.code === 1) {
-      //       this.$notify.error(res.code)
-      //     }
-      //   })
-      // }
+      if (msg === '新增模板') {
+        this.form = {}
+      } else {
+        this.id = id
+        this.$post('/rate/findById', {
+          id: id
+        }).then(res => {
+          if (res.code === 0) {
+            // this.$notify.success(res.msg)
+            this.form = res.data
+          } else if (res.code === 1) {
+            this.$notify.error(res.msg)
+          }
+        })
+      }
     },
     // 多选删除
     deleteData () {
@@ -208,22 +164,75 @@ export default {
         })
       } else {
         this.multipleSelection.forEach(v => {
-          id.push(v.id)
+          id.push(v.rateId)
         })
         this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$notify({
-            type: 'success',
-            message: '删除成功!'
+          this.$post('/rate/deleteRate', {
+            id: id.toString()
+          }).then(res => {
+            if (res.code === 0) {
+              this.getData()
+              this.$notify({
+                type: 'success',
+                message: '删除成功!'
+              })
+            } else {
+              this.$notify({
+                type: 'error',
+                message: res.msg
+              })
+            }
           })
         }).catch(() => {
           this.$notify({
             type: 'info',
             message: '已取消删除'
           })
+        })
+      }
+    },
+    getData () {
+      this.$fetch('/rate/findAll', {
+        page: this.pages.currentPage,
+        pageSize: this.pages.pageSize
+      }).then(res => {
+        if (res.code === 0) {
+          this.pages.total = res.data.records
+          this.tableData = res.data.rows
+        }
+      })
+    },
+    submit () {
+      if (this.title === '新增模板') {
+        this.$post('/rate/addRate', this.form).then(res => {
+          if (res.code === 0) {
+            this.$notify.success(res.msg)
+            this.dialogVisible = false
+            this.getData()
+          } else {
+            this.$notify.error(res.msg)
+          }
+        })
+      } else {
+        this.$post('/rate/updateRate', {
+          templateName: this.form.templateName,
+          stages: this.form.stages,
+          downPayment: this.form.downPayment,
+          platform: this.form.platform,
+          firstRate: this.form.firstRate,
+          id: this.id
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify.success(res.msg)
+            this.dialogVisible = false
+            this.getData()
+          } else {
+            this.$notify.error(res.msg)
+          }
         })
       }
     }
