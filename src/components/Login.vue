@@ -7,12 +7,12 @@
         <h2>ingot个人用户后台</h2>
         <p>一款让车险更美好的智能平台</p>
         <div class="enter">
-          <img src="../assets/img/per.png" alt="">
-          <input type="text" placeholder="请输入管理员姓名">
+          <img src="../assets/img/per.png" >
+          <input type="text" placeholder="请输入管理员姓名" v-model="user">
         </div>
         <div class="enter">
-          <img src="../assets/img/psd.png" alt="">
-          <input type="password" placeholder="请输入登录密码">
+          <img src="../assets/img/psd.png" >
+          <input type="password" placeholder="请输入登录密码" v-model="psd" @keypress="enter">
         </div>
         <div class="rember" @click="remember">
           <img v-if="check" src="../assets/img/unchecked.png" alt="">
@@ -26,17 +26,71 @@
 </template>
 
 <script>
+import { setCookie, getCookie, delCookie } from '../assets/js/cookie.js'
 export default {
   name: 'Login',
   data () {
     return {
-      check: true
+      check: true,
+      user: '',
+      psd: ''
+    }
+  },
+  mounted () {
+    if (getCookie('phone')) {
+      this.user = getCookie('phone')
+      this.psd = getCookie('pwd')
+      this.check = false
     }
   },
   methods: {
+    // 回车键登录
+    enter (e) {
+      if (e.keyCode === 13) {
+        this.login()
+      }
+    },
     // 登录
     login () {
-      this.$router.push({name: 'Homepage'})
+      if (this.check === false) {
+        delCookie('phone')
+        delCookie('pwd')
+        setCookie('phone', this.user, 1000 * 60)
+        setCookie('pwd', this.psd, 1000 * 60)
+      } else {
+        delCookie('phone')
+      }
+      if (this.user === '') {
+        this.$notify({
+          type: 'error',
+          title: '警告',
+          message: '请输入账号'
+        })
+      } else if (this.psd === '') {
+        this.$notify({
+          type: 'error',
+          title: '警告',
+          message: '请输入密码'
+        })
+      } else {
+        this.$post('/login/loginIn', {
+          phone: this.user,
+          password: this.psd
+        }).then(res => {
+          console.log(res)
+          if (res.code === 0) {
+            sessionStorage.setItem('token', res.data.token)
+            sessionStorage.setItem('username', res.data.username)
+            this.$router.push({name: 'Homepage'})
+          } else {
+            this.$notify({
+              type: 'error',
+              title: '警告',
+              message: res.msg
+            })
+          }
+        })
+      }
     },
     // 记住密码
     remember () {
