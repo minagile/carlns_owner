@@ -72,6 +72,12 @@ export default {
     }
   },
   mounted () {
+    let path = this.$router.history.current.name
+    this.dataList.forEach((v, k) => {
+      if (path === v.link) {
+        this.num = k
+      }
+    })
     var barheight = document.documentElement.clientheight || document.body.clientHeight
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
   },
