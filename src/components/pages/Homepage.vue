@@ -49,7 +49,7 @@
 
     <div class="table">
       <el-button type="text" style="color:#333333;padding: 30px 0 25px 25px;">逾期订单</el-button>
-      <el-button type="text" style="color:#333333;float:right;padding: 30px 25px 25px 0;">订单排序</el-button>
+      <el-button type="text" style="color:#333333;float:right;padding: 30px 25px 25px 0;" @click="getData('withinTheTimeLimitOrders', 1)">订单排序</el-button>
       <el-table
         max-height="700"
         :data="tableData"
@@ -110,7 +110,7 @@ export default {
     this.getChartData('monthLine')
     this.getChartData('sourceOfUserTop5')
     // this.getData('deleteByOrder')
-    this.getData('withinTheTimeLimitOrders', '')
+    this.getData('withinTheTimeLimitOrders', null)
   },
   methods: {
     getData (data, order) {
