@@ -3,7 +3,7 @@
   <div class="TypesOfInsurance">
     <div class="delete">
       <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
-      <p class="shanchu" @click="deleteData"><img src="../../../assets/img/delete.png" alt="">删除</p>
+      <p class="shanchu" @click="deleteData('')"><img src="../../../assets/img/delete.png" alt="">删除</p>
     </div>
 
     <div class="ower-table">
@@ -18,11 +18,11 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="billId"
           label="编号">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="templateName"
           label="模板名称"
           min-width="300">
         </el-table-column>
@@ -42,9 +42,9 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia('查看模板')">查看</el-button>
-            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板')">编辑</el-button>
-            <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.name)">删除</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('查看模板', scope.row.billId)">查看</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.billId)">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="deleteData(scope.row.billId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,35 +68,25 @@
       width="683px">
       <div class="dialog-header">{{title}}</div>
       <div class="dialog-select">
-        <div class="dialog-select-input">
+        <div class="dialog-select-input" :class="{disabled: disabled === true}">
           <span>模板名称:</span>
-          <input type="text">
+          <input type="text" v-model="titleName" style="background: none;">
         </div>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
         <el-button @click="dialogVisible = false">取 消</el-button>
       </div>
       <div class="dialog-table">
-        <el-table
-          ref="multipleTable"
-          :data="tableData"
-          style="width: 80%; margin: 0 auto"
-          @selection-change="handleSelectionChange"
-          height="580"
-          cell-class-name="cellStyle"
-          header-cell-class-name="cellStyle">
-          <el-table-column
-            type="selection"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="险种"
-            width="300">
-          </el-table-column>
-          <el-table-column
-            label="金额">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.value" placeholder="请选择">
+        <table>
+          <tr>
+            <th class="first"><el-checkbox v-model="checked" :indeterminate="isIndeterminate" :disabled="disabled"></el-checkbox></th>
+            <th class="second">险种</th>
+            <th>保额</th>
+          </tr>
+          <tr v-for="item in tableData1" :key="item.name">
+            <td class="first"><el-checkbox v-model="item.checked" @change="selected(item)" :disabled="disabled"></el-checkbox></td>
+            <td class="second">{{item.name}}</td>
+            <td>
+              <el-select v-model="item.money" placeholder="请选择" :disabled="disabled">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -104,9 +94,9 @@
                   :value="item.value">
                 </el-option>
               </el-select>
-            </template>
-          </el-table-column>
-        </el-table>
+            </td>
+          </tr>
+        </table>
       </div>
     </el-dialog>
   </div>
@@ -118,15 +108,13 @@ export default {
   data () {
     return {
       value: '',
-      options: [],
-      tableData: [
+      options: [
         {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          value: ''
+          value: 1,
+          label: '1元'
         }
       ],
+      tableData: [],
       pages: {
         currentPage: 1,
         pageSize: 10,
@@ -138,51 +126,200 @@ export default {
       title: '新增模板',
       form: {
         name: ''
-      }
+      },
+      tableData1: [
+        {
+          money: '',
+          checked: false,
+          name: '机动车损失险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '第三者责任险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '司机责任险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '乘客责任险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '盗抢险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '自燃险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '划痕险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '涉水险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '指定专修厂险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '不计免赔险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '商业险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '交强险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '车船税'
+        }
+      ],
+      checked: false,
+      isIndeterminate: false,
+      disabled: false,
+      titleName: '',
+      deleteId: [],
+      all: []
     }
   },
   mounted () {
-    this.pages.total = this.tableData.length
+    this.getData()
+  },
+  watch: {
+    checked (val) {
+      if (val === true) {
+        this.tableData1.forEach(v => {
+          v.checked = true
+          this.selected(v)
+        })
+      } else {
+        this.tableData1.forEach(v => {
+          v.checked = false
+          this.selected(v)
+        })
+      }
+    },
+    multipleSelection (val) {
+      if (val.length === this.tableData1.length) {
+        this.checked = true
+        this.isIndeterminate = false
+      } else if (val.length === 0) {
+        this.checked = false
+        this.isIndeterminate = false
+      } else {
+        this.isIndeterminate = true
+      }
+    }
   },
   methods: {
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
+      this.pages.pageSize = val
+      this.getData()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
+      this.pages.currentPage = val
+      this.getData()
     },
     // 点击多选框
     handleSelectionChange (val) {
-      this.multipleSelection = val
+      this.all = val
+    },
+    selected (val) {
+      if (val.checked === true) {
+        if (this.multipleSelection.indexOf(val) === -1) {
+          this.multipleSelection.push(val)
+        }
+      } else {
+        this.multipleSelection.splice(this.multipleSelection.indexOf(val), 1)
+      }
     },
     // 打开弹窗
-    openDia (msg) {
+    openDia (msg, id) {
       this.title = msg
       this.dialogVisible = true
+      this.checked = false
+      this.disabled = false
+      this.multipleSelection = []
+      this.titleName = ''
+      this.tableData1.forEach(v => {
+        v.checked = false
+        v.money = ''
+      })
       if (msg === '新增模板') {
         this.form = {}
       } else {
-        this.$post('', {
-
+        this.$post('/billNote/findById', {
+          id: id
         }).then(res => {
           if (res.code === 0) {
-            this.$notify.success(res.code)
+            this.titleName = res.data.templateName
+            res.data.arr.forEach(v => {
+              this.tableData1.forEach(o => {
+                if (o.name.indexOf(v.name) > -1) {
+                  o.checked = true
+                  o.money = v.money
+                  this.multipleSelection.push(o)
+                }
+              })
+            })
+            if (msg === '查看模板') {
+              this.disabled = true
+            }
           } else if (res.code === 1) {
             this.$notify.error(res.code)
           }
         })
       }
     },
-    // 删除
-    toDelete (id) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+    // 多选删除
+    deleteData (id) {
+      if (!id) {
+        this.all.forEach(v => {
+          id += v.billId + ','
+        })
+      }
+      this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$notify({
-          type: 'success',
-          message: '删除成功!'
+        this.$post('/billNote/delete', {
+          id: id
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getData()
+          } else {
+            this.$notify({
+              type: 'error',
+              message: res.msg
+            })
+          }
         })
       }).catch(() => {
         this.$notify({
@@ -191,34 +328,24 @@ export default {
         })
       })
     },
-    // 多选删除
-    deleteData () {
-      let id = []
-      if (this.multipleSelection.length < 1) {
-        this.$notify({
-          type: 'warning',
-          message: '未选择信息!'
-        })
-      } else {
-        this.multipleSelection.forEach(v => {
-          id.push(v.id)
-        })
-        this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$notify({
-            type: 'success',
-            message: '删除成功!'
-          })
-        }).catch(() => {
-          this.$notify({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      }
+    getData () {
+      this.$fetch('/billNote/findAll', {
+        page: this.pages.currentPage,
+        pageSize: this.pages.pageSize
+      }).then(res => {
+        if (res.code === 0) {
+          this.pages.total = res.data.records
+          this.tableData = res.data.rows
+        }
+      })
+    },
+    submit () {
+      this.$post('/billNote/addBillNote', {
+        name: this.titleName,
+        multipleSelection: this.multipleSelection
+      }).then(res => {
+        // sd
+      })
     }
   }
 }
@@ -253,6 +380,33 @@ export default {
     }
     .cellStyle {
       border: none!important;
+    }
+  }
+  .dialog-table {
+    height: 580px;
+    overflow: auto;
+    table {
+      width: 88%;
+      margin: 0 auto;
+      th, td {
+        // width: 33%;
+        text-align: left;
+        height: 50px;
+      }
+      .first {
+        width: 100px;
+      }
+      .second {
+        width: 300px;
+      }
+    }
+  }
+  .disabled {
+    background: #f5f7fa;
+    cursor: not-allowed;
+    input {
+      cursor: not-allowed;
+      pointer-events:none
     }
   }
 }
