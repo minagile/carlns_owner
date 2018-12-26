@@ -40,7 +40,8 @@
           min-width="300">
         </el-table-column> -->
         <el-table-column
-          label="操作">
+          label="操作"
+          width="150">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('查看模板', scope.row.billId)">查看</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.billId)">编辑</el-button>
@@ -131,6 +132,21 @@ export default {
         {
           money: '',
           checked: false,
+          name: '商业险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '交强险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '车船税'
+        },
+        {
+          money: '',
+          checked: false,
           name: '机动车损失险'
         },
         {
@@ -177,21 +193,6 @@ export default {
           money: '',
           checked: false,
           name: '不计免赔险'
-        },
-        {
-          money: '',
-          checked: false,
-          name: '商业险'
-        },
-        {
-          money: '',
-          checked: false,
-          name: '交强险'
-        },
-        {
-          money: '',
-          checked: false,
-          name: '车船税'
         }
       ],
       checked: false,
@@ -199,7 +200,8 @@ export default {
       disabled: false,
       titleName: '',
       deleteId: [],
-      all: []
+      all: [],
+      id: null
     }
   },
   mounted () {
@@ -263,6 +265,7 @@ export default {
       this.disabled = false
       this.multipleSelection = []
       this.titleName = ''
+      this.id = id
       this.tableData1.forEach(v => {
         v.checked = false
         v.money = ''
@@ -340,12 +343,46 @@ export default {
       })
     },
     submit () {
-      this.$post('/billNote/addBillNote', {
-        name: this.titleName,
-        multipleSelection: this.multipleSelection
-      }).then(res => {
-        // sd
-      })
+      if (this.title === '新增模板') {
+        this.$post('/billNote/addBillNote', {
+          name: this.titleName,
+          multipleSelection: JSON.stringify(this.multipleSelection)
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.getData()
+            this.dialogVisible = false
+          } else {
+            this.$notify({
+              type: 'error',
+              message: res.msg
+            })
+          }
+        })
+      } else {
+        this.$post('/billNote/updateBillNote', {
+          name: this.titleName,
+          multipleSelection: JSON.stringify(this.multipleSelection),
+          id: this.id
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              message: '修改成功!'
+            })
+            this.getData()
+            this.dialogVisible = false
+          } else {
+            this.$notify({
+              type: 'error',
+              message: res.msg
+            })
+          }
+        })
+      }
     }
   }
 }

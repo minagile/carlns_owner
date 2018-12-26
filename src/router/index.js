@@ -10,6 +10,7 @@ import StageManagement from '@/components/pages/StageManagement'
 import DecisionSupport from '@/components/pages/DecisionSupport'
 import Setting from '@/components/pages/Setting'
 import LoginOut from '@/components/pages/LoginOut'
+import Detail from '@/components/pages/policyList/detail'
 
 Vue.use(Router)
 
@@ -28,7 +29,14 @@ export default new Router({
         {
           path: '/PolicyList',
           name: 'PolicyList',
-          component: PolicyList
+          component: PolicyList,
+          children: [
+            {
+              path: 'detail/:id',
+              name: 'Detail',
+              component: Detail
+            }
+          ]
         },
         {
           path: '/StageManagement',
