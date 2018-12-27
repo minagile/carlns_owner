@@ -133,7 +133,7 @@ export default {
         }
       }
       if (data === 'withinTheTimeLimitOrders') params = { orderby: this.orderby }
-      this.$fetch('/index/' + data, params).then(res => {
+      this.$fetch('/admin/index/' + data, params).then(res => {
         if (res.code === 0) {
           // console.log(res)
           if (data === 'withinTheTimeLimitOrders') this.tableData = res.data
@@ -144,7 +144,7 @@ export default {
       })
     },
     getChartData (data, X) {
-      this.$fetch('/index/' + data).then(res => {
+      this.$fetch('/admin/index/' + data).then(res => {
         if (res.code === 0) {
           if (data === 'sourceOfUserTop5') {
             this.getPiecharts(res.data)
@@ -177,7 +177,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        this.$fetch('/index/deleteByOrder', { orderId: id }).then(res => {
+        this.$fetch('/admin/index/deleteByOrder', { orderId: id }).then(res => {
           if (res.code === 0) {
             this.$notify({
               type: 'success',

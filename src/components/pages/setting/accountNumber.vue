@@ -71,8 +71,8 @@
       <div class="dialog-header">权限设置</div>
       <div class="top">
         <span>账号：{{name}}</span>
-        <el-button class="setBtn" size="small"  @click="childDialogVisible = false">返回</el-button>
-        <el-button class="setBtn" size="small" @click="sureUpdate">确定</el-button>
+        <el-button class="setBtn" size="small" @click="childDialogVisible = false">返回</el-button>
+        <el-button class="setBtn" size="small" type="primary" @click="sureUpdate">确定</el-button>
       </div>
       <el-table :data="tableData5" style="width: 100%" max-height="500">
         <el-table-column type="expand">
@@ -212,7 +212,7 @@ export default {
           ids += v + ','
         })
         // console.log(ids)
-        this.$post('/limit/updatePermission', {
+        this.$post('/admin/limit/updatePermission', {
           fundIds: ids,
           adminId: this.id
         }).then(res => {
@@ -290,12 +290,12 @@ export default {
         this.name = name
         this.id = id
         this.childDialogVisible = true
-        this.$fetch('/limit/findByAdminId', { adminId: id }).then(res => {
+        this.$fetch('/admin/limit/findByAdminId', { adminId: id }).then(res => {
           // console.log(res)
           this.tableData5 = res
         })
         // 获取选中权限的id
-        this.$fetch('/limit/selectByAdminId', { adminId: id }).then(res => {
+        this.$fetch('/admin/limit/selectByAdminId', { adminId: id }).then(res => {
           res.data.forEach(v => {
             this.arr.push(v.adauthId)
           })
@@ -386,9 +386,9 @@ function zero (data) {
       line-height: 32px;
       padding: 20px 20px 0;
       .setBtn {
-        background: #282828;
-        color: #fff;
-        border-color: #282828;
+        // background: #282828;
+        // color: #fff;
+        // border-color: #282828;
         float: right;
         margin-left: 30px;
       }

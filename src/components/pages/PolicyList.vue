@@ -1,110 +1,72 @@
 <template>
   <!-- 保单列表 -->
   <div class="PolicyList">
-
-    <div class="table-search">
-      <el-select v-model="value" clearable placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-input
-        placeholder="请输入内容"
-        v-model="value"
-        clearable
-        class="input">
-      </el-input>
-      <button class="table-btn-search">查询</button>
-      <button class="table-btn-clear">清空</button>
-    </div>
-
-    <div class="delete">
-      <img src="../../assets/img/delete.png" alt="">删除
-    </div>
-
-    <div class="ower-table">
-      <el-table
-        ref="multipleTable"
-        :data="tableData"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        height="575">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="date"
-          label="订单号">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="保单号">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="姓名">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="手机号">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="车牌">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="生效日期">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="保费合计">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="保单状态">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="支付状态">
-        </el-table-column>
-        <el-table-column
-          label="操作">
-          <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia">查看详情</el-button>
-            <el-button type="text" style="color: red;">去支付</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <div class="ower-pages" v-if="pages.total > pages.pageSize">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pages.currentPage"
-        :page-sizes="pages.pageSizes"
-        :page-size="pages.pageSize"
-        layout="sizes, prev, pager, next, total"
-        :total="pages.total">
-      </el-pagination>
-    </div>
-
-    <el-dialog
-      :visible.sync="dialogVisible"
-      width="30%">
-      <div class="dialog-header">详情</div>
-      <span>这是一段信息</span>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <router-view/>
+    <div v-show="this.$router.history.current.name === 'PolicyList'" class="policy">
+      <div class="table-search">
+        <el-select
+          v-model="value"
+          filterable
+          placeholder="请输入订单号">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <button class="table-btn-search" @click="search">查询</button>
+        <button class="table-btn-clear" @click="value = ''">清空</button>
       </div>
-    </el-dialog>
+
+      <div class="delete">
+        <img src="../../assets/img/delete.png" alt="">删除
+      </div>
+
+      <div class="ower-table">
+        <el-table
+          v-loading="loading"
+          ref="multipleTable"
+          :data="tableData"
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          height="575">
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号"></el-table-column>
+          <el-table-column prop="insureId" label="保单号" min-width="200"></el-table-column>
+          <el-table-column prop="userName" label="姓名"></el-table-column>
+          <el-table-column prop="userPhone" label="手机号"></el-table-column>
+          <el-table-column prop="plateNum" label="车牌"></el-table-column>
+          <el-table-column label="提交时间">
+            <template slot-scope="scope">
+              {{ scope.row.createTime | timeChange }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="premium" label="保费合计"></el-table-column>
+          <el-table-column prop="orderStateName" label="保单状态"></el-table-column>
+          <el-table-column prop="stateOfPaymentName" label="支付状态"></el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
+              <el-button type="text" style="color: red;">去支付</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <div class="ower-pages" v-if="pages.total > pages.pageSize">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pages.currentPage"
+          :page-sizes="pages.pageSizes"
+          :page-size="pages.pageSize"
+          layout="sizes, prev, pager, next, total"
+          :total="pages.total">
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -115,13 +77,7 @@ export default {
     return {
       value: '',
       options: [],
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
+      tableData: [],
       pages: {
         currentPage: 1,
         pageSize: 10,
@@ -129,34 +85,77 @@ export default {
         total: 10
       },
       multipleSelection: [],
-      dialogVisible: false
+      loading: false
     }
   },
   mounted () {
-    this.pages.total = this.tableData.length
+    this.getList()
+    this.getData()
   },
   methods: {
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
+      this.pages.pageSize = val
+      this.getData()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
+      this.pages.currentPage = val
+      this.getData()
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
-    openDia () {
-      this.dialogVisible = true
+    openDia (id) {
+      this.$router.push(`/PolicyList/detail/${id}`)
+    },
+    getList () {
+      this.$fetch('/admin/policy/selectAllOrder').then(res => {
+        if (res.code === 0) {
+          this.options = res.data.map(item => {
+            return {value: item.orderNo, label: item.orderNo}
+          })
+        }
+      })
+    },
+    getData () {
+      this.loading = true
+      this.$fetch('/admin/policy/showInsureByOrderNo', {
+        orderNo: this.value,
+        page: this.pages.currentPage,
+        pageSize: this.pages.pageSize
+      }).then(res => {
+        this.loading = false
+        this.tableData = res.data.rows
+        this.pages.total = res.data.records
+      })
+    },
+    // 查询
+    search () {
+      this.pages.currentPage = 1
+      this.getData()
+    }
+  },
+  filters: {
+    timeChange (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
     }
   }
+}
+function zero (data) {
+  if (data < 10) return '0' + data
+  return data
 }
 </script>
 
 <style lang="less" scoped>
 .PolicyList {
-  height: 101%;
-  padding: 35px 30px;
-  box-sizing: border-box;
   overflow: auto;
+  .policy {
+    padding: 35px 30px;
+    box-sizing: border-box;
+    min-height: 790px;
+  }
 }
 </style>

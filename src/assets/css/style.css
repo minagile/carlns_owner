@@ -33,6 +33,7 @@
   line-height:40px;
   height: 40px;
   text-align: right;
+  /* float: right; */
   cursor: pointer;
 }
 .delete img {
@@ -181,4 +182,10 @@ input::-webkit-inner-spin-button {
  
 input[type="number"] {
     -moz-appearance: textfield;
+}
+input {
+  outline: none;
+}
+button {
+  outline: none;
 }

@@ -119,7 +119,7 @@ export default {
     // 添加短信
     addMessage () {
       if (this.title === '新增模板') {
-        this.$post('/message/insert', this.form).then(res => {
+        this.$post('/admin/message/insert', this.form).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = false
@@ -132,7 +132,7 @@ export default {
           }
         })
       } else {
-        this.$post('/message/changeMessage', this.form).then(res => {
+        this.$post('/admin/message/changeMessage', this.form).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = false
@@ -147,7 +147,7 @@ export default {
       }
     },
     getData () {
-      this.$fetch('/message/selectAllMessage').then(res => {
+      this.$fetch('/admin/message/selectAllMessage').then(res => {
         // console.log(res)
         if (res.code === 0) {
           this.tableData = res.data
@@ -172,7 +172,7 @@ export default {
           'messageState': 2
         }
       } else {
-        this.$fetch('/message/selectMessageById', {'messageId': id}).then(res => {
+        this.$fetch('/admin/message/selectMessageById', {'messageId': id}).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = true
@@ -200,7 +200,7 @@ export default {
           type: 'warning'
         }).then(() => {
           id.forEach(v => {
-            this.$fetch('/message/delete', {'messageId': v}).then(res => {
+            this.$fetch('/admin/message/delete', {'messageId': v}).then(res => {
               if (res.code === 0) {
                 this.$notify({
                   type: 'success',
@@ -231,7 +231,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$fetch('/message/delete', {'messageId': id}).then(res => {
+        this.$fetch('/admin/message/delete', {'messageId': id}).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.$notify({

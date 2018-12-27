@@ -77,6 +77,12 @@ export default {
       if (path === v.link) {
         this.num = k
       }
+      if (path === 'Detail') {
+        this.num = 1
+      }
+      if (path === 'SDetail') {
+        this.num = 2
+      }
     })
     var barheight = document.documentElement.clientheight || document.body.clientHeight
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
