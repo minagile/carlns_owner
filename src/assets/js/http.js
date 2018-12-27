@@ -9,13 +9,8 @@ axios.defaults.timeout = 10000
 // axios.defaults.baseURL = 'http://192.168.1.140:80'
 // axios.defaults.baseURL = 'http://192.168.1.102:8848'
 // axios.defaults.baseURL = 'http://192.168.1.136:8080'
-<<<<<<< HEAD
 // axios.defaults.baseURL = 'http://192.168.1.128:8080'
 axios.defaults.baseURL = 'http://192.168.1.117:8080'
-=======
-axios.defaults.baseURL = 'http://192.168.1.128:8080'
-// axios.defaults.baseURL = 'http://192.168.1.117:80'
->>>>>>> bc0cbf7cf66abba1d466c74273ad66df4b155104
 // axios.defaults.baseURL = 'http://192.168.1.136:80'
 // axios.defaults.baseURL = 'https://www.easyfq.com'
 
