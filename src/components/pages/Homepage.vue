@@ -183,6 +183,7 @@ export default {
               type: 'success',
               title: '删除成功'
             })
+            this.getData('withinTheTimeLimitOrders', null)
           } else {
             this.$notify({
               type: 'error',

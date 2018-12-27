@@ -160,7 +160,8 @@ export default {
       if (this.multipleSelection.length < 1) {
         this.$notify({
           type: 'warning',
-          message: '未选择信息!'
+          message: '未选择信息!',
+          title: '警告'
         })
       } else {
         this.multipleSelection.forEach(v => {
@@ -178,17 +179,19 @@ export default {
               this.getData()
               this.$notify({
                 type: 'success',
+                title: '成功',
                 message: '删除成功!'
               })
             } else {
               this.$notify({
                 type: 'error',
+                title: '错误',
                 message: res.msg
               })
             }
           })
         }).catch(() => {
-          this.$notify({
+          this.$message({
             type: 'info',
             message: '已取消删除'
           })
@@ -227,11 +230,19 @@ export default {
           id: this.id
         }).then(res => {
           if (res.code === 0) {
-            this.$notify.success(res.msg)
+            this.$notify({
+              type: 'success',
+              message: res.msg,
+              title: '成功'
+            })
             this.dialogVisible = false
             this.getData()
           } else {
-            this.$notify.error(res.msg)
+            this.$notify({
+              type: 'error',
+              title: '错误',
+              message: res.msg
+            })
           }
         })
       }
@@ -245,7 +256,7 @@ export default {
   padding: 0 30px 30px 30px;
   box-sizing: border-box;
   overflow: auto;
-  height: 100%;
+  // height: 100%;
   .form {
     padding: 25px 120px 0 90px;
   }

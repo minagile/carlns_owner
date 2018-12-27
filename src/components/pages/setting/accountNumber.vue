@@ -204,7 +204,8 @@ export default {
       if (this.arr.length <= 0) {
         this.$notify({
           message: '您还没有选择任何权限',
-          type: 'error'
+          type: 'warning',
+          title: '警告'
         })
       } else {
         let ids = ''
