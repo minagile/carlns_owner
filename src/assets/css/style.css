@@ -33,6 +33,15 @@
   line-height:40px;
   height: 40px;
   text-align: right;
+  /* float: right; */
+  /* cursor: pointer; */
+}
+.delete .dd {
+  cursor: pointer;
+  width: 60px;
+  float: right;
+}
+.delete p {
   cursor: pointer;
 }
 .delete img {
@@ -187,4 +196,8 @@ input {
 }
 button {
   outline: none;
+}
+.cannotDel {
+  cursor: not-allowed;
+  pointer-events:none
 }

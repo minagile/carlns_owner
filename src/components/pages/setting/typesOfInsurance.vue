@@ -3,7 +3,7 @@
   <div class="TypesOfInsurance">
     <div class="delete">
       <p class="add" @click="openDia('新增模板')"><img src="../../../assets/img/add.png" alt="">新增</p>
-      <p class="shanchu" @click="deleteData('')"><img src="../../../assets/img/delete.png" alt="">删除</p>
+      <p class="shanchu" :class="{cannotDel: all.length === 0}" @click="deleteData('')"><img src="../../../assets/img/delete.png" alt="">删除</p>
     </div>
 
     <div class="ower-table">
@@ -273,7 +273,7 @@ export default {
       if (msg === '新增模板') {
         this.form = {}
       } else {
-        this.$post('/billNote/findById', {
+        this.$post('/admin/billNote/findById', {
           id: id
         }).then(res => {
           if (res.code === 0) {
@@ -332,7 +332,7 @@ export default {
       })
     },
     getData () {
-      this.$fetch('/billNote/findAll', {
+      this.$fetch('/admin/billNote/findAll', {
         page: this.pages.currentPage,
         pageSize: this.pages.pageSize
       }).then(res => {
@@ -344,7 +344,7 @@ export default {
     },
     submit () {
       if (this.title === '新增模板') {
-        this.$post('/billNote/addBillNote', {
+        this.$post('/admin/billNote/addBillNote', {
           name: this.titleName,
           multipleSelection: JSON.stringify(this.multipleSelection)
         }).then(res => {
@@ -362,8 +362,8 @@ export default {
             })
           }
         })
-      } else {
-        this.$post('/billNote/updateBillNote', {
+      } else if (this.title === '编辑模板') {
+        this.$post('/admin/billNote/updateBillNote', {
           name: this.titleName,
           multipleSelection: JSON.stringify(this.multipleSelection),
           id: this.id
@@ -382,6 +382,8 @@ export default {
             })
           }
         })
+      } else {
+        this.dialogVisible = false
       }
     }
   }

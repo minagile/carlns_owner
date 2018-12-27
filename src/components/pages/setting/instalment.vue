@@ -142,7 +142,7 @@ export default {
         this.form = {}
       } else {
         this.id = id
-        this.$post('/rate/findById', {
+        this.$post('/admin/rate/findById', {
           id: id
         }).then(res => {
           if (res.code === 0) {
@@ -171,7 +171,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$post('/rate/deleteRate', {
+          this.$post('/admin/rate/deleteRate', {
             id: id.toString()
           }).then(res => {
             if (res.code === 0) {
@@ -196,7 +196,7 @@ export default {
       }
     },
     getData () {
-      this.$fetch('/rate/findAll', {
+      this.$fetch('/admin/rate/findAll', {
         page: this.pages.currentPage,
         pageSize: this.pages.pageSize
       }).then(res => {
@@ -208,7 +208,7 @@ export default {
     },
     submit () {
       if (this.title === '新增模板') {
-        this.$post('/rate/addRate', this.form).then(res => {
+        this.$post('/admin/rate/addRate', this.form).then(res => {
           if (res.code === 0) {
             this.$notify.success(res.msg)
             this.dialogVisible = false
@@ -218,7 +218,7 @@ export default {
           }
         })
       } else {
-        this.$post('/rate/updateRate', {
+        this.$post('/admin/rate/updateRate', {
           templateName: this.form.templateName,
           stages: this.form.stages,
           downPayment: this.form.downPayment,

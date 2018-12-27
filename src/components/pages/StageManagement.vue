@@ -1,98 +1,74 @@
 <template>
   <!-- 保单列表 -->
   <div class="StageManagement">
+    <router-view></router-view>
 
-    <div class="table-search">
-      <el-select v-model="value" clearable placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-input
-        placeholder="请输入内容"
-        v-model="value"
-        clearable
-        class="input">
-      </el-input>
-      <button class="table-btn-search">查询</button>
-      <button class="table-btn-clear">清空</button>
-    </div>
+    <div class="stage" v-if="this.$router.history.current.name === 'StageManagement'">
+      <div class="table-search">
+        <el-select
+          v-model="value"
+          filterable
+          placeholder="请输入订单号">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <button class="table-btn-search" @click="search">查询</button>
+        <button class="table-btn-clear" @click="value = ''">清空</button>
+      </div>
 
-    <div class="delete">
-      <img src="../../assets/img/delete.png" alt=""><span>删除</span>
-    </div>
+      <div class="delete">
+        <p class="shanchu" @click="deleteData">
+          <img src="../../assets/img/delete.png" ><span>删除</span>
+        </p>
+      </div>
 
-    <div class="ower-table">
-      <el-table
-        ref="multipleTable"
-        :data="tableData"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        height="580">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="date"
-          label="订单号">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="保单号">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="姓名">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="手机号">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="车牌">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="生效日期">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="保费合计">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="保单状态">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="支付状态">
-        </el-table-column>
-        <el-table-column
-          label="操作">
-          <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia">查看详情</el-button>
-            <el-button type="text" style="color: red;">去支付</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+      <div class="ower-table">
+        <el-table
+          ref="multipleTable"
+          :data="tableData"
+          style="width: 100%"
+          v-loading="loading"
+          @selection-change="handleSelectionChange"
+          height="580">
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号"></el-table-column>
+          <el-table-column prop="plateNum" label="车牌号"></el-table-column>
+          <el-table-column prop="username" label="姓名"></el-table-column>
+          <el-table-column prop="tel" label="手机号"></el-table-column>
+          <el-table-column prop="channelName" label="订单来源"></el-table-column>
+          <el-table-column prop="quotationSource" label="报价来源"></el-table-column>
+          <el-table-column prop="overStage" label="分期状态"></el-table-column>
+          <el-table-column prop="company" label="保险公司"></el-table-column>
+          <el-table-column label="提交时间">
+            <template slot-scope="scope">
+              {{ scope.row.createTime | timeChange }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="orderState" label="订单状态"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
-    <div class="ower-pages" v-if="pages.total > pages.pageSize">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pages.currentPage"
-        :page-sizes="pages.pageSizes"
-        :page-size="pages.pageSize"
-        layout="sizes, prev, pager, next, total"
-        :total="pages.total">
-      </el-pagination>
+      <div class="ower-pages" v-if="pages.total > pages.pageSize">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pages.currentPage"
+          :page-sizes="pages.pageSizes"
+          :page-size="pages.pageSize"
+          layout="sizes, prev, pager, next, total"
+          :total="pages.total">
+        </el-pagination>
+      </div>
     </div>
 
     <el-dialog
@@ -113,7 +89,7 @@ export default {
   name: 'StageManagement',
   data () {
     return {
-      value: '',
+      value: null,
       options: [],
       tableData: [],
       pages: {
@@ -123,37 +99,99 @@ export default {
         total: 10
       },
       multipleSelection: [],
-      dialogVisible: false
+      dialogVisible: false,
+      loading: false
     }
   },
   mounted () {
-    this.pages.total = this.tableData.length
+    this.getData()
+    this.getList()
   },
   methods: {
+    // 批量删除
+    deleteData () {
+      if (this.multipleSelection.length > 0) {
+        var ids = ''
+        this.multipleSelection.forEach(v => {
+          ids += v.orderId + ','
+        })
+        // GET /fd/insure/deleteOrder
+        this.$fetch('/admin/insure/deleteOrder', { orderIds: ids }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              title: '删除',
+              message: res.msg
+            })
+            this.getData()
+          }
+        })
+      } else {
+        this.$notify({
+          type: 'info',
+          title: '删除',
+          message: '您还未选择需要删除的订单'
+        })
+      }
+    },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
-    openDia () {
-      this.dialogVisible = true
+    openDia (id) {
+      this.$router.push({name: 'SDetail', query: {id: id}})
+    },
+    search () {
+      this.pages.currentPage = 1
+      this.getData()
+    },
+    getList () {
+      this.$fetch('/admin/insure/getOrders').then(res => {
+        if (res.code === 0) {
+          this.options = res.data.map(item => {
+            return {value: item, label: item}
+          })
+        }
+      })
     },
     getData () {
-      // this.
+      this.loading = true
+      this.$fetch('/admin/insure/managerStage', {
+        orderNo: this.value,
+        page: this.pages.currentPage,
+        pageSize: this.pages.pageSize
+      }).then(res => {
+        this.loading = false
+        this.tableData = res.data.rows
+        this.pages.total = res.data.records
+      })
+    }
+  },
+  filters: {
+    timeChange (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
     }
   }
+}
+function zero (data) {
+  if (data < 10) return '0' + data
+  return data
 }
 </script>
 
 <style lang="less" scoped>
 .StageManagement {
-  height: 101%;
-  padding: 35px 30px;
-  box-sizing: border-box;
   overflow: auto;
+  .stage {
+    height: 101%;
+    padding: 35px 30px;
+    box-sizing: border-box;
+  }
 }
 </style>

@@ -212,7 +212,7 @@ export default {
           ids += v + ','
         })
         // console.log(ids)
-        this.$post('/limit/updatePermission', {
+        this.$post('/admin/limit/updatePermission', {
           fundIds: ids,
           adminId: this.id
         }).then(res => {
@@ -290,12 +290,12 @@ export default {
         this.name = name
         this.id = id
         this.childDialogVisible = true
-        this.$fetch('/limit/findByAdminId', { adminId: id }).then(res => {
+        this.$fetch('/admin/limit/findByAdminId', { adminId: id }).then(res => {
           // console.log(res)
           this.tableData5 = res
         })
         // 获取选中权限的id
-        this.$fetch('/limit/selectByAdminId', { adminId: id }).then(res => {
+        this.$fetch('/admin/limit/selectByAdminId', { adminId: id }).then(res => {
           res.data.forEach(v => {
             this.arr.push(v.adauthId)
           })

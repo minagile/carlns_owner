@@ -20,7 +20,7 @@
       </div>
 
       <div class="delete">
-        <img src="../../assets/img/delete.png" alt="">删除
+        <p class="dd" :class="{cannotDel: multipleSelection.length === 0}" @click="toDelete"><img src="../../assets/img/delete.png" alt="">删除</p>
       </div>
 
       <div class="ower-table">
@@ -31,52 +31,26 @@
           style="width: 100%"
           @selection-change="handleSelectionChange"
           height="575">
-          <el-table-column
-            type="selection"
-            width="55">
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号"></el-table-column>
+          <el-table-column prop="insureId" label="保单号" min-width="200"></el-table-column>
+          <el-table-column prop="userName" label="姓名"></el-table-column>
+          <el-table-column prop="userPhone" label="手机号"></el-table-column>
+          <el-table-column prop="plateNum" label="车牌"></el-table-column>
+          <el-table-column label="提交时间">
+            <template slot-scope="scope">
+              {{ scope.row.createTime | timeChange }}
+            </template>
           </el-table-column>
-          <el-table-column
-            prop="orderNo"
-            label="订单号">
-          </el-table-column>
-          <el-table-column
-            prop="insureId"
-            label="保单号">
-          </el-table-column>
-          <el-table-column
-            prop="userName"
-            label="姓名">
-          </el-table-column>
-          <el-table-column
-            prop="userPhone"
-            label="手机号">
-          </el-table-column>
-          <el-table-column
-            prop="plateNum"
-            label="车牌">
-          </el-table-column>
-          <el-table-column
-            prop="createTime"
-            label="生效日期">
-          </el-table-column>
-          <el-table-column
-            prop="premium"
-            label="保费合计">
-          </el-table-column>
-          <el-table-column
-            prop="orderStateName"
-            label="保单状态">
-          </el-table-column>
-          <el-table-column
-            prop="stateOfPaymentName"
-            label="支付状态">
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            width="150">
+          <el-table-column prop="premium" label="保费合计"></el-table-column>
+          <el-table-column prop="orderStateName" label="保单状态"></el-table-column>
+          <el-table-column prop="stateOfPaymentName" label="支付状态"></el-table-column>
+          <el-table-column label="操作" width="250">
             <template slot-scope="scope">
               <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
-              <el-button type="text" style="color: red;">去支付</el-button>
+              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 2)" v-if="scope.row.stateOfPaymentName === '待支付'">全额支付</el-button>
+              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 1)" v-if="scope.row.stateOfPaymentName === '待支付'">首期支付</el-button>
+              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 3)" v-if="scope.row.stateOfPaymentName == '全额支付' || scope.row.stateOfPaymentName == '首期支付'">去结算</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -138,7 +112,7 @@ export default {
       this.$router.push(`/PolicyList/detail/${id}`)
     },
     getList () {
-      this.$fetch('/policy/selectAllOrder').then(res => {
+      this.$fetch('/admin/policy/selectAllOrder').then(res => {
         if (res.code === 0) {
           this.options = res.data.map(item => {
             return {value: item.orderNo, label: item.orderNo}
@@ -148,7 +122,7 @@ export default {
     },
     getData () {
       this.loading = true
-      this.$fetch('/policy/showInsureByOrderNo', {
+      this.$fetch('/admin/policy/showInsureByOrderNo', {
         orderNo: this.value,
         page: this.pages.currentPage,
         pageSize: this.pages.pageSize
@@ -162,8 +136,90 @@ export default {
     search () {
       this.pages.currentPage = 1
       this.getData()
+    },
+    toDelete () {
+      let id = ''
+      this.multipleSelection.forEach(v => {
+        id += `${v.orderId},`
+      })
+      this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$post('/admin/policy/deleteByOrderNo', {
+          orderIds: id
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getData()
+          } else {
+            this.$notify({
+              type: 'error',
+              message: res.msg
+            })
+          }
+        })
+      }).catch(() => {
+        this.$notify({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    // 支付，全额2，首期1，结算3
+    pay (id, msg) {
+      let type = ''
+      if (msg === 1) {
+        type = '首期支付'
+      } else if (msg === 2) {
+        type = '全额支付'
+      } else {
+        type = '结算'
+      }
+      this.$confirm(`确定要${type}吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$post('/admin/policy/pay', {
+          orderId: id,
+          payment: msg
+        }).then(res => {
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              message: res.msg
+            })
+            this.getData()
+          } else {
+            this.$notify({
+              type: 'error',
+              message: res.msg
+            })
+          }
+        })
+      }).catch(() => {
+        this.$notify({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
+    }
+  },
+  filters: {
+    timeChange (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
     }
   }
+}
+function zero (data) {
+  if (data < 10) return '0' + data
+  return data
 }
 </script>
 

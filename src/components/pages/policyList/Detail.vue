@@ -7,7 +7,10 @@
     </el-breadcrumb>
 
     <div class="content">
-      <p class="title">基础信息</p>
+      <p class="title">
+        <img src="../../../assets/img/baodanxinxi (3).png" alt="">
+        基础信息
+      </p>
       <div class="basic">
         <div>
           <p>被保人姓名：{{basicMsg.userName}}</p>
@@ -25,7 +28,10 @@
           <p>投保单号：{{basicMsg.insureNo}}</p>
         </div>
       </div>
-      <p class="title">保单信息</p>
+      <p class="title">
+        <img src="../../../assets/img/baodanxinxi (1).png" alt="">
+        保单信息
+      </p>
       <div class="basic">
         <div>
           <p>保险公司：{{basicMsg.insuranceCompany}}</p>
@@ -101,7 +107,7 @@ export default {
   },
   methods: {
     getData () {
-      this.$fetch('/policy/showInsureDetails', {
+      this.$fetch('/admin/policy/showInsureDetails', {
         orderId: this.$route.params.id
       }).then(res => {
         if (res.code === 0) {
@@ -132,6 +138,10 @@ export default {
       line-height:24px;
       margin-left: 122px;
       margin-top: 29px;
+      img {
+        vertical-align: middle;
+        margin: -2px 5px 0 0;
+      }
     }
     .basic {
       margin: 0 auto;
