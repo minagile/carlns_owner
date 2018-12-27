@@ -3,7 +3,7 @@
   <div class="Homepage">
     <el-row type="flex" class="row-bg top" justify="space-around">
       <el-col :span="7">
-        <div class="grid-content">
+        <div class="grid-content" @click="addOrder">
           <div class="left">
             <i><b>{{ order }}</b> 笔</i>
             <span>新增订单</span>
@@ -100,22 +100,39 @@ export default {
       num: 1,
       order: 0,
       order1: 0,
-      order2: 0
+      order2: 0,
+      orderby: null
     }
   },
   mounted () {
     this.getData('newOrderCount')
     this.getData('totalCostOfInstallments')
     this.getData('grossProfit')
-    this.getChartData('monthLine')
+    var X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+    this.getChartData('monthLine', X)
     this.getChartData('sourceOfUserTop5')
     // this.getData('deleteByOrder')
     this.getData('withinTheTimeLimitOrders', null)
   },
   methods: {
+    addOrder () {
+      this.$put('/index/isRead').then(res => {
+        // console.log(res)
+        if (res.code === 0) {
+          this.$router.push('/PolicyList')
+        }
+      })
+    },
     getData (data, order) {
       var params = {}
-      if (data === 'withinTheTimeLimitOrders') params = { orderby: order }
+      if (order === 1) {
+        if (this.orderby === null) {
+          this.orderby = 1
+        } else {
+          this.orderby = null
+        }
+      }
+      if (data === 'withinTheTimeLimitOrders') params = { orderby: this.orderby }
       this.$fetch('/index/' + data, params).then(res => {
         if (res.code === 0) {
           // console.log(res)
@@ -126,13 +143,13 @@ export default {
         }
       })
     },
-    getChartData (data) {
+    getChartData (data, X) {
       this.$fetch('/index/' + data).then(res => {
         if (res.code === 0) {
           if (data === 'sourceOfUserTop5') {
             this.getPiecharts(res.data)
           } else {
-            this.getLinecharts(res.data)
+            this.getLinecharts(res.data, X)
           }
         }
       })
@@ -140,14 +157,18 @@ export default {
     // 折线图时间选择
     changeLineCharts (i) {
       this.num = i
+      var X = []
       if (i === 1) {
-        this.getChartData('monthLine')
+        X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+        this.getChartData('monthLine', X)
       }
       if (i === 2) {
-        this.getChartData('weekLine')
+        X = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        this.getChartData('weekLine', X)
       }
       if (i === 3) {
-        this.getChartData('dayLine')
+        X = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23']
+        this.getChartData('dayLine', X)
       }
     },
     // 表格删除
@@ -172,7 +193,7 @@ export default {
       })
     },
     // 折线图
-    getLinecharts (data) {
+    getLinecharts (data, xaxis) {
       var myChart = echarts.init(document.getElementById('line'))
       myChart.setOption({
         color: ['#5962FF', '#F7622E'],
@@ -180,7 +201,7 @@ export default {
           // orient: 'vertical',
           // x: 'right',
           // y: 'bottom',
-          top: '35',
+          top: '30',
           right: '20',
           // data: [data[0].name, data[1].name],
           data: ['总分期金额', '还款金额'],
@@ -202,7 +223,7 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: xaxis,
           axisLine: { show: false },
           axisTick: { show: false },
           axisLabel: {
@@ -263,16 +284,16 @@ export default {
       })
       var myChart = echarts.init(document.getElementById('main'))
       myChart.setOption({
-        color: ['#5962FF', '#2D38FF', '#FFC700', '#F7622E'],
+        color: ['#979DFF', '#A951FB', '#2D38FF', '#FFC700', '#F7622E'],
         title: {
-          text: '用户来源',
+          text: '用户来源TOP5',
           textStyle: {
             fontFamily: 'Microsoft YaHei',
             fontWeight: 400,
             fontSize: 17
           },
-          left: '35px',
-          top: '35px'
+          left: '10px',
+          top: '20px'
         },
         tooltip: {
           trigger: 'item',
@@ -282,12 +303,15 @@ export default {
           // orient: 'vertical',
           x: 'center',
           // y: 'bottom',
-          bottom: '20',
+          bottom: '10',
           data: X,
           itemWidth: 10,
           itemHeight: 10,
           borderRadius: 10,
           itemGap: 20,
+          formatter: function (name) {
+            return name.split(' ')[0] + '\n' + name.split(' ')[1]
+          },
           textStyle: {
             fontSize: 12,
             padding: [0, 0, 0, 6]
@@ -295,7 +319,7 @@ export default {
         },
         series: [
           {
-            name: '用户来源',
+            name: '用户来源TOP5',
             type: 'pie',
             radius: ['40%', '60%'],
             avoidLabelOverlap: false,
@@ -306,9 +330,10 @@ export default {
               },
               emphasis: {
                 show: true,
+                formatter: '{b}\n{c}',
                 textStyle: {
-                  fontSize: '30',
-                  fontWeight: 'bold'
+                  fontSize: '15',
+                  lineHeight: 50
                 }
               }
             },
@@ -342,6 +367,7 @@ export default {
     border-radius: 4px;
     min-height: 125px;
     background: #ffffff;
+    cursor: pointer;
     .left {
       float: left;
       padding: 30px 0 0 35px;
