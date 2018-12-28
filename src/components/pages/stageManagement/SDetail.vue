@@ -71,7 +71,7 @@
         分期方案
       </p>
       <div class="basic">
-        <h3><span>分期总金额：8,000元</span><span>分期期数：12期</span></h3>
+        <h3><span>分期总金额：{{ basicMsg.amount }}元</span><span>分期期数：{{ basicMsg.stage }}期</span></h3>
         <table class="border">
           <tr>
             <th>分期期数</th>
@@ -81,7 +81,7 @@
           </tr>
           <tr v-for="item in stages" :key="item.name">
             <td>{{ item.stagesSequential }}</td>
-            <td>{{ item.createTime | timeChange }}</td>
+            <td>{{ item.stagesCutoff | timeChange }}</td>
             <td>{{ item.stagesPrice }}</td>
             <td>
               <span v-if="item.stagesState === 0" style="color:red">待还款</span>

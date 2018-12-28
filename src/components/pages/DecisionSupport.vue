@@ -57,6 +57,36 @@
         </div>
       </el-col>
     </el-row>
+    <!-- 车型 -->
+    <el-row type="flex" class="row-bg center" justify="space-around">
+      <el-col :span="16">
+        <div class="grid-content">
+          <ChartHeader :title="'车型'"/>
+          <div id="bar" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div class="grid-content">
+          <ChartHeader :title="'模式'"/>
+          <div id="pie2" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+    </el-row>
+    <!-- 年龄 -->
+    <el-row type="flex" class="row-bg center" justify="space-around">
+      <el-col :span="16">
+        <div class="grid-content">
+          <ChartHeader :title="'年龄'"/>
+          <div id="bar_line" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div class="grid-content">
+          <ChartHeader :title="'期数'"/>
+          <div id="pie3" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -104,9 +134,29 @@ export default {
         {value: 310, name: '邮件营销'}
       ]
     })
+    this.getPiecharts(2, {
+      color: ['#04AAFE', '#0593FF', '#6BC4FF'],
+      legend: ['直接访问', '邮件营销', '邮件营'],
+      data: [
+        {value: 335, name: '直接访问'},
+        {value: 310, name: '邮件营销'},
+        {value: 310, name: '邮件营'}
+      ]
+    })
+    this.getPiecharts(3, {
+      color: ['#4AA8F6', '#3DBDA2', '#FCB738'],
+      legend: ['直接访问', '邮件营销', '邮件营'],
+      data: [
+        {value: 335, name: '直接访问'},
+        {value: 310, name: '邮件营销'},
+        {value: 310, name: '邮件营'}
+      ]
+    })
     this.getScatterCharts()
     this.getLinecharts()
     this.OverLinecharts()
+    this.BarCarCharts()
+    this.BarFullCarCharts()
   },
   methods: {
     // 折线缩略图
@@ -411,6 +461,92 @@ export default {
             showSymbol: false,
             stack: '总量',
             data: [220, 182, 191, 234, 290, 330, 310]
+          }
+        ]
+      })
+    },
+    // 车型柱状图
+    BarCarCharts () {
+      var myChart = echarts.init(document.getElementById('bar'))
+      myChart.setOption({
+        color: ['#FCB738'],
+        grid: {
+          left: '10%',
+          top: '10%',
+          right: '10%',
+          bottom: '10%'
+        },
+        xAxis: {
+          type: 'category',
+          axisLine: { show: false },
+          axisTick: { show: false },
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          name: '数量',
+          splitLine: {
+            lineStyle: {
+              type: 'solid'
+            }
+          },
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        series: [{
+          barWidth: 50,
+          data: [120, 200, 150, 80, 70, 110, 130],
+          type: 'bar'
+        }]
+      })
+    },
+    // 年龄柱状图
+    BarFullCarCharts () {
+      var myChart = echarts.init(document.getElementById('bar_line'))
+      myChart.setOption({
+        color: ['#4AA8F6 '],
+        grid: {
+          left: '10%',
+          top: '10%',
+          right: '10%',
+          bottom: '10%'
+        },
+        xAxis: {
+          type: 'category',
+          axisLine: { show: false },
+          axisTick: { show: false },
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          name: '数量',
+          splitLine: {
+            lineStyle: {
+              type: 'solid'
+            }
+          },
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        series: [
+          {
+            barGap: '-100%',
+            itemStyle: {
+              normal: {
+                color: '#eee'
+              }
+            },
+            barWidth: 50,
+            data: [200, 200, 200, 200, 200, 200, 200],
+            type: 'bar'
+          },
+          {
+            // barGap: '-100%',
+            barWidth: 50,
+            data: [120, 200, 150, 80, 70, 110, 130],
+            type: 'bar',
+            label: {
+              show: true,
+              position: 'top'
+            }
           }
         ]
       })
