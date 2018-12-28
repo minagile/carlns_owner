@@ -25,11 +25,13 @@ export default new Router({
         {
           path: '/Homepage',
           name: 'Homepage',
-          component: Homepage
+          component: Homepage,
+          meta: {requiresAuth: true}
         },
         {
           path: '/PolicyList',
           name: 'PolicyList',
+          meta: {requiresAuth: true},
           component: PolicyList,
           children: [
             {
@@ -42,6 +44,7 @@ export default new Router({
         {
           path: '/StageManagement',
           name: 'StageManagement',
+          meta: {requiresAuth: true},
           component: StageManagement,
           children: [
             {
@@ -54,16 +57,19 @@ export default new Router({
         {
           path: '/DecisionSupport',
           name: 'DecisionSupport',
+          meta: {requiresAuth: true},
           component: DecisionSupport
         },
         {
           path: '/Setting',
           name: 'Setting',
+          meta: {requiresAuth: true},
           component: Setting
         },
         {
           path: '/LoginOut',
           name: 'LoginOut',
+          meta: {requiresAuth: true},
           component: LoginOut
         }
       ]

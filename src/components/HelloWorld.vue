@@ -112,6 +112,7 @@ export default {
         cancelButtonText: '取消'
       }).then(() => {
         this.$router.push('/')
+        sessionStorage.clear()
         this.$notify({
           type: 'success',
           title: '注销登录'
