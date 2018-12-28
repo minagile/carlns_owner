@@ -32,12 +32,12 @@
           @selection-change="handleSelectionChange"
           height="575">
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="orderNo" label="订单号"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号" min-width="150"></el-table-column>
           <el-table-column prop="insureId" label="保单号" min-width="200"></el-table-column>
           <el-table-column prop="userName" label="姓名"></el-table-column>
           <el-table-column prop="userPhone" label="手机号"></el-table-column>
           <el-table-column prop="plateNum" label="车牌"></el-table-column>
-          <el-table-column label="提交时间">
+          <el-table-column label="提交时间" width="100">
             <template slot-scope="scope">
               {{ scope.row.createTime | timeChange }}
             </template>
