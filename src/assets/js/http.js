@@ -34,15 +34,10 @@ axios.interceptors.request.use(
 // http response 拦截器
 axios.interceptors.response.use(
   response => {
-    if (response.data.code === 609) {
+    if (response.data.code === 201) {
       Message({
         message: response.data.msg,
         type: 'info'
-      })
-      router.push({
-        path: '/',
-        querry: { redirect: router.currentRoute.fullPath }
-        // 从哪个页面跳转
       })
     }
     if (response.data.code === 606) {
@@ -63,7 +58,7 @@ axios.interceptors.response.use(
         type: 'info'
       })
       router.push({
-        path: '/MLogin',
+        path: '/',
         querry: { redirect: router.currentRoute.fullPath }
         // 从哪个页面跳转
       })
@@ -75,7 +70,7 @@ axios.interceptors.response.use(
         type: 'error'
       })
       router.push({
-        path: '/MLogin',
+        path: '/',
         querry: { redirect: router.currentRoute.fullPath }
         // 从哪个页面跳转
       })
@@ -98,7 +93,7 @@ axios.interceptors.response.use(
         type: 'info'
       })
       router.push({
-        path: '/MLogin',
+        path: '/',
         querry: { redirect: router.currentRoute.fullPath }
       })
     }

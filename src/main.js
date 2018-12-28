@@ -50,6 +50,22 @@ Vue.use(VueResource)
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
+router.beforeEach((to, from, next) => {
+  const TOKEN = sessionStorage.getItem('token')
+  if (to.matched.some(res => res.meta.requiresAuth)) {
+    if (!TOKEN && to.path !== '/') {
+      next({
+        path: '/',
+        query: {redirect: to.fullPath}
+      })
+    } else if (TOKEN) {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -77,11 +77,15 @@ export default {
           phone: this.user,
           password: this.psd
         }).then(res => {
-          console.log(res)
           if (res.code === 0) {
+            let path = ''
+            if (this.$route.query !== {}) {
+              path = this.$route.query.redirect || '/Homepage'
+            }
+            console.log(path)
             sessionStorage.setItem('token', res.data.token)
             sessionStorage.setItem('username', res.data.username)
-            this.$router.push({name: 'Homepage'})
+            this.$router.push({path: path})
           } else {
             this.$notify({
               type: 'error',
