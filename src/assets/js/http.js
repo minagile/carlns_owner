@@ -6,9 +6,9 @@ import { Message } from 'element-ui'
 axios.defaults.timeout = 10000
 // axios.defaults.baseURL = 'http://192.168.1.128:8848' // 彭
 // axios.defaults.baseURL = 'http://192.168.1.145:80'
-axios.defaults.baseURL = 'http://192.168.1.140:80'
+// axios.defaults.baseURL = 'http://192.168.1.140:80'
 // axios.defaults.baseURL = 'http://192.168.1.102:8848'
-// axios.defaults.baseURL = 'http://192.168.1.136:8080'
+axios.defaults.baseURL = 'http://192.168.1.136:8080'
 // axios.defaults.baseURL = 'http://192.168.1.128:8080'
 // axios.defaults.baseURL = 'http://192.168.1.117:8080'
 // axios.defaults.baseURL = 'http://192.168.1.136:80'
@@ -34,15 +34,10 @@ axios.interceptors.request.use(
 // http response 拦截器
 axios.interceptors.response.use(
   response => {
-    if (response.data.code === 609) {
+    if (response.data.code === 201) {
       Message({
         message: response.data.msg,
         type: 'info'
-      })
-      router.push({
-        path: '/',
-        querry: { redirect: router.currentRoute.fullPath }
-        // 从哪个页面跳转
       })
     }
     if (response.data.code === 606) {

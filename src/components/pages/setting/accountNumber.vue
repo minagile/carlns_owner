@@ -15,7 +15,7 @@
         @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="adminPhone" label="账号"></el-table-column>
-        <el-table-column prop="adminPwd" label="密码" min-width="180"></el-table-column>
+        <el-table-column prop="reversiblePassword" label="密码" min-width="180"></el-table-column>
         <el-table-column label="添加日期">
           <template slot-scope="scope">
             <div>{{ scope.row.createTime | timeChange }}</div>
@@ -23,6 +23,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
+            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑账号', scope.row.adminId, scope.row.adminName)">编辑</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('设置权限', scope.row.adminId, scope.row.adminName)">设置权限</el-button>
             <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.adminId)">删除</el-button>
           </template>
@@ -187,7 +188,6 @@ export default {
   },
   methods: {
     checkBox (id, status) {
-      // console.log(id, status)
       if (status === true) {
         this.arr.push(id)
       } else {
@@ -197,7 +197,6 @@ export default {
           }
         })
       }
-      // console.log(this.arr)
     },
     // 确定权限
     sureUpdate () {
@@ -247,19 +246,40 @@ export default {
           message: '密码不能为空'
         })
       } else {
-        this.$post('/admin/addAdmin', this.form).then(res => {
-          if (res.code === 0) {
-            this.$notify({
-              type: 'success',
-              title: '添加账号',
-              message: '添加成功'
-            })
-            this.dialogVisible = false
-            this.getData()
-          } else {
-            this.$notify.error({message: res.msg})
-          }
-        })
+        if (this.title === '新增账号') {
+          this.$post('/admin/addAdmin', this.form).then(res => {
+            if (res.code === 0) {
+              this.$notify({
+                type: 'success',
+                title: '添加账号',
+                message: '添加成功'
+              })
+              this.dialogVisible = false
+              this.getData()
+            } else {
+              this.$notify.error({message: res.msg})
+            }
+          })
+        } else {
+          this.$post('/admin/updateAdmin', {
+            phone: this.form.phone,
+            username: this.form.username,
+            password: this.form.password,
+            adminId: this.id
+          }).then(res => {
+            if (res.code === 0) {
+              this.$notify({
+                type: 'success',
+                title: '修改账号',
+                message: '修改成功'
+              })
+              this.dialogVisible = false
+              this.getData()
+            } else {
+              this.$notify.error({message: res.msg})
+            }
+          })
+        }
       }
     },
     getData () {
@@ -274,20 +294,20 @@ export default {
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
+      this.pages.pageSize = val
+      this.getData()
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+      this.pages.currentPage = val
+      this.getData()
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
       console.log(val)
     },
     openDia (msg, id, name) {
-      if (msg === '新增账号') {
-        this.title = msg
-        this.dialogVisible = true
-        this.form = {}
-      } else {
+      if (msg === '设置权限') {
         this.name = name
         this.id = id
         this.childDialogVisible = true
@@ -300,6 +320,23 @@ export default {
           res.data.forEach(v => {
             this.arr.push(v.adauthId)
           })
+        })
+      } else if (msg === '新增账号') {
+        this.title = msg
+        this.dialogVisible = true
+        this.form = {}
+      } else {
+        this.title = msg
+        this.dialogVisible = true
+        this.id = id
+        this.$fetch('/admin/findById', {
+          adminId: id
+        }).then(res => {
+          if (res.code === 0) {
+            this.form.username = res.data.adminName
+            this.form.phone = res.data.adminPhone
+            this.form.password = res.data.reversiblePassword
+          }
         })
       }
     },
