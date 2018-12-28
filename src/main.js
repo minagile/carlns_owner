@@ -50,6 +50,24 @@ Vue.use(VueResource)
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
+router.beforeEach((to, from, next) => {
+  const userKey = sessionStorage.getItem('token')
+  if (to.matched.some(res => res.meta.requireAuth)) { // 验证是否需要登陆
+    if (!userKey && to.path !== '/login') { // 查询本地存储信息是否已经登陆
+      next({
+        path: '/',
+        query: { redirect: to.fullPath }
+      })
+    } else if (userKey && to.path === '/') {
+      next({ path: '/' })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
