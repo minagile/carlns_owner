@@ -36,42 +36,60 @@ export default {
           label: '首页',
           link: 'Homepage',
           img: img.list1,
-          activeImg: img.active1
+          activeImg: img.active1,
+          show: true
         },
         {
           label: '保单列表',
           link: 'PolicyList',
           img: img.list2,
-          activeImg: img.active2
+          activeImg: img.active2,
+          show: false
         },
         {
           label: '分期管理',
           link: 'StageManagement',
           img: img.list3,
-          activeImg: img.active3
+          activeImg: img.active3,
+          show: false
         },
         {
           label: '决策支持',
           link: 'DecisionSupport',
           img: img.list4,
-          activeImg: img.active4
+          activeImg: img.active4,
+          show: false
         },
         {
           label: '系统设置',
           link: 'Setting',
           img: img.list5,
-          activeImg: img.active5
+          activeImg: img.active5,
+          show: false
         },
         {
           label: '注销',
           link: 'LoginOut',
           img: img.list6,
-          activeImg: img.active6
+          activeImg: img.active6,
+          show: true
         }
       ]
     }
   },
   mounted () {
+    this.$fetch('/admin/limit/findPermission').then(res => {
+      if (res.code === 0) {
+        console.log(res)
+        this.dataList.forEach(v => {
+          res.data.forEach(m => {
+            if (m.adauthName === v.label) {
+              v.show = true
+            }
+          })
+        })
+      }
+    })
     let path = this.$router.history.current.name
     this.dataList.forEach((v, k) => {
       if (path === v.link) {

@@ -54,7 +54,7 @@
         max-height="700"
         :data="tableData"
         style="width: 96%;margin: 0 auto;">
-        <el-table-column prop="orderNo" label="订单号"></el-table-column>
+        <el-table-column prop="orderNo" label="订单号" min-width="100"></el-table-column>
         <el-table-column prop="userName" label="姓名"></el-table-column>
         <el-table-column prop="carNo" label="车牌"></el-table-column>
         <el-table-column prop="orderResource" label="订单来源"></el-table-column>
