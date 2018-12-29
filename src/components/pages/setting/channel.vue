@@ -15,19 +15,14 @@
         @selection-change="handleSelectionChange"
         height="580">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="messageName" label="渠道识别码" min-width="120"></el-table-column>
-        <el-table-column prop="messageName" label="渠道名称" min-width="120"></el-table-column>
-        <el-table-column prop="messageText" label="分期模板" min-width="400"></el-table-column>
-        <!-- <el-table-column label="类型" width="120">
-          <template slot-scope="scope">
-            <div>{{ scope.row.messageType | type }}</div>
-          </template>
-        </el-table-column> -->
+        <el-table-column prop="channelNo" label="渠道识别码" min-width="120"></el-table-column>
+        <el-table-column prop="channelName" label="渠道名称" min-width="120"></el-table-column>
+        <el-table-column prop="templateName" label="分期模板" min-width="400"></el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑渠道', scope.row.messageId)">编辑</el-button>
-            <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.messageId)">删除</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑渠道', scope.row.channelId)">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.channelId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -53,10 +48,10 @@
       <div class="form">
         <el-form ref="form" :model="form" label-width="120px">
           <el-form-item label="渠道名称：">
-            <el-input v-model="form.messageName" auto-complete="off" placeholder="请输入短信标题"></el-input>
+            <el-input v-model="form.channelName" auto-complete="off" placeholder="请输入短信标题"></el-input>
           </el-form-item>
           <el-form-item label="渠道识别码：">
-            <el-input v-model="form.messageTitle" auto-complete="off" placeholder="请输入签名"></el-input>
+            <el-input v-model="form.channelNo" auto-complete="off" placeholder="请输入签名"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -85,9 +80,7 @@ export default {
         pageSizes: [10, 20, 30, 40],
         total: 10
       },
-      form: {
-        messageState: 2
-      }
+      form: {}
     }
   },
   mounted () {
@@ -97,8 +90,8 @@ export default {
   methods: {
     // 添加渠道
     addMessage () {
-      if (this.title === '新增模板') {
-        this.$post('/admin/message/insert', this.form).then(res => {
+      if (this.title === '新增渠道') {
+        this.$post('/admin/channel/insert', this.form).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = false
@@ -111,7 +104,11 @@ export default {
           }
         })
       } else {
-        this.$post('/admin/message/changeMessage', this.form).then(res => {
+        this.$post('/admin/channel/changeChannel', {
+          channelId: this.form.channelId,
+          channelNo: this.form.channelNo,
+          channelName: this.form.channelName
+        }).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = false
@@ -126,7 +123,7 @@ export default {
       }
     },
     getData () {
-      this.$fetch('/admin/message/selectAllMessage').then(res => {
+      this.$fetch('/admin/channel/selectAllChannel').then(res => {
         // console.log(res)
         if (res.code === 0) {
           this.tableData = res.data
@@ -150,16 +147,14 @@ export default {
     openDia (msg, id) {
       this.title = msg
       this.dialogVisible = true
-      if (msg === '新增模板') {
-        this.form = {
-          'messageState': 2
-        }
+      if (msg === '新增渠道') {
+        this.form = {}
       } else {
-        this.$fetch('/admin/message/selectMessageById', {'messageId': id}).then(res => {
+        this.$fetch('/admin/channel/selectMessageById', {'channelId': id}).then(res => {
           // console.log(res)
           if (res.code === 0) {
             this.dialogVisible = true
-            this.msg = '编辑模板'
+            this.msg = '编辑渠道'
             this.form = res.data.message
           }
         })
@@ -175,7 +170,7 @@ export default {
         })
       } else {
         this.multipleSelection.forEach(v => {
-          id.push(v.messageId)
+          id.push(v.channelId)
         })
         this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
           confirmButtonText: '确定',
@@ -183,7 +178,7 @@ export default {
           type: 'warning'
         }).then(() => {
           id.forEach(v => {
-            this.$fetch('/admin/message/delete', {'messageId': v}).then(res => {
+            this.$fetch('/admin/channel/delete', {'channelId': v}).then(res => {
               if (res.code === 0) {
                 this.$notify({
                   type: 'success',
@@ -214,7 +209,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$fetch('/admin/message/delete', {'messageId': id}).then(res => {
+        this.$fetch('/admin/channel/delete', {'channelId': id}).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.$notify({

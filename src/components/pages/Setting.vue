@@ -17,6 +17,9 @@
     <el-tab-pane label="渠道管理" name="fifth" :lazy="true">
       <channel/>
     </el-tab-pane>
+    <el-tab-pane label="日志管理" name="sixth" :lazy="true">
+      <log/>
+    </el-tab-pane>
   </el-tabs>
   </div>
 </template>
@@ -27,6 +30,7 @@ import TypesOfInsurance from './setting/typesOfInsurance'
 import AccountNumber from './setting/accountNumber'
 import ShortMessage from './setting/shortMessage'
 import Channel from './setting/channel'
+import log from './setting/log'
 export default {
   name: 'Setting',
   data () {
@@ -44,7 +48,8 @@ export default {
     TypesOfInsurance,
     AccountNumber,
     ShortMessage,
-    Channel
+    Channel,
+    log
   }
 }
 </script>

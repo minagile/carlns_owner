@@ -8,12 +8,12 @@
           <div class="name">{{username}}</div>
         </div>
         <div class="tab_area">
-          <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}">
-            <div v-if="i !== 1">
+          <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}" v-show="o.show">
+            <div v-if="i !== 2">
               <img :src="num === i ? o.activeImg : o.img" alt="">
               {{ o.label }}
             </div>
-            <el-badge :value="order" class="item" v-if="i === 1" :hidden="order === 0">
+            <el-badge :value="order" class="item" v-if="i === 2" :hidden="order === 0">
               <img :src="num === i ? o.activeImg : o.img" alt="">
               {{ o.label }}
             </el-badge>
@@ -112,10 +112,12 @@ export default {
     var barheight = document.documentElement.clientheight || document.body.clientHeight
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
     this.username = sessionStorage.getItem('username')
+    this.getData()
   },
   methods: {
     getData () {
-      this.$fetch('/admin/index/newOrderCount').then(res => {
+      this.$fetch('/admin/insure/selectFlag').then(res => {
+        // console.log(res)
         if (res.code === 0) {
           this.order = res.data
         }

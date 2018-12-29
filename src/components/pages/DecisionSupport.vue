@@ -7,7 +7,12 @@
       <div class="change_pandect">
         <div class="change_curve" v-for="(o, i) in 4" :key="i">
           <h6>全额投保订单数</h6>
-          <p><i>2341</i><b>同比 0.36%</b></p>
+          <p>
+            <i>2341</i>
+            <b>同比 0.36%</b>
+            <img src="../../assets/img/arrow_down.png" v-show="false" alt="">
+            <img src="../../assets/img/arrow_up.png" alt="">
+          </p>
           <div :id="'curve' + i" style="width: 100%;height: 80px;"></div>
         </div>
       </div>
@@ -592,6 +597,9 @@ export default {
             font-weight:400;
             color:rgba(51,51,51,1);
             padding-right: 14px;
+          }
+          img {
+            width: 10px;
           }
         }
       }
