@@ -9,8 +9,14 @@
         </div>
         <div class="tab_area">
           <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}">
-            <img :src="num === i ? o.activeImg : o.img" alt="">
-            {{ o.label }}
+            <div v-if="i !== 1">
+              <img :src="num === i ? o.activeImg : o.img" alt="">
+              {{ o.label }}
+            </div>
+            <el-badge :value="order" class="item" v-if="i === 1" :hidden="order === 0">
+              <img :src="num === i ? o.activeImg : o.img" alt="">
+              {{ o.label }}
+            </el-badge>
           </li>
         </div>
       </div>
@@ -31,6 +37,7 @@ export default {
   data () {
     return {
       num: 0,
+      order: 0,
       dataList: [
         {
           label: '首页',
@@ -106,6 +113,13 @@ export default {
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
   },
   methods: {
+    getData () {
+      this.$fetch('/admin/index/newOrderCount').then(res => {
+        if (res.code === 0) {
+          this.order = res.data
+        }
+      })
+    },
     open7 () {
       this.$confirm('是否退出当前帐号, 是否继续?', '提示', {
         confirmButtonText: '确定',

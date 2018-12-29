@@ -12,21 +12,6 @@
         </div>
       </div>
     </div>
-    <!-- 来源分析 -->
-    <el-row type="flex" class="row-bg center" justify="space-around">
-      <el-col :span="16">
-        <div class="grid-content">
-          <ChartHeader :title="'来源分析'"/>
-          <div id="scatter" style="width: 100%;height:448px;"></div>
-        </div>
-      </el-col>
-      <el-col :span="7">
-        <div class="grid-content">
-          <ChartHeader :title="'来源统计TOP5'"/>
-          <div id="pie0" style="width: 100%;height:448px;"></div>
-        </div>
-      </el-col>
-    </el-row>
     <!-- 交易分析 -->
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
@@ -54,6 +39,21 @@
         <div class="grid-content">
           <ChartHeader :title="'性别'"/>
           <div id="pie1" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+    </el-row>
+    <!-- 来源分析 -->
+    <el-row type="flex" class="row-bg center" justify="space-around">
+      <el-col :span="16">
+        <div class="grid-content">
+          <ChartHeader :title="'来源分析'"/>
+          <div id="scatter" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div class="grid-content">
+          <ChartHeader :title="'来源统计TOP5'"/>
+          <div id="pie0" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
     </el-row>
@@ -528,15 +528,15 @@ export default {
         },
         series: [
           {
-            barGap: '-100%',
-            itemStyle: {
-              normal: {
-                color: '#eee'
-              }
-            },
+            type: 'bar',
             barWidth: 50,
-            data: [200, 200, 200, 200, 200, 200, 200],
-            type: 'bar'
+            itemStyle: {
+              normal: {color: 'rgba(0,0,0,0.05)'}
+            },
+            barGap: '-100%',
+            barCategoryGap: '40%',
+            data: [300, 300, 300, 300, 300, 300, 300],
+            animation: false
           },
           {
             // barGap: '-100%',
