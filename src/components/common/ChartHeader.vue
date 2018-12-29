@@ -2,7 +2,14 @@
   <div class="chart_header">
     <span>{{ title }}</span>
     <div class="timechoose">
-      <i>{{ time }}：</i>
+      <el-select v-model="value" placeholder="请选择时间段">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
       <el-date-picker
         v-model="value7"
         type="daterange"
@@ -52,7 +59,24 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }]
-      }
+      },
+      options: [{
+        label: '当天',
+        value: '1'
+      }, {
+        label: '当周',
+        value: '2'
+      }, {
+        label: '当月',
+        value: '3'
+      }, {
+        label: '当季',
+        value: '4'
+      }, {
+        label: '当年',
+        value: '5'
+      }],
+      value: ''
     }
   },
   props: {
@@ -81,15 +105,15 @@ export default {
   .timechoose {
     position: relative;
   }
-  i {
+  .el-select {
     position: absolute;
     z-index: 1;
     line-height: 40px;
     font-size:14px;
     font-family:MicrosoftYaHei;
     font-weight:400;
+    width: 125px;
     color:rgba(102,102,102,1);
-    text-indent: 15px;
   }
   .el-date-editor {
     height: 40px;
