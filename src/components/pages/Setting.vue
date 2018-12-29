@@ -14,6 +14,9 @@
     <el-tab-pane label="短信模板" name="fourth" :lazy="true">
       <short-message/>
     </el-tab-pane>
+    <el-tab-pane label="渠道管理" name="fifth" :lazy="true">
+      <channel/>
+    </el-tab-pane>
   </el-tabs>
   </div>
 </template>
@@ -23,6 +26,7 @@ import Instalment from './setting/Instalment'
 import TypesOfInsurance from './setting/typesOfInsurance'
 import AccountNumber from './setting/accountNumber'
 import ShortMessage from './setting/shortMessage'
+import Channel from './setting/channel'
 export default {
   name: 'Setting',
   data () {
@@ -39,7 +43,8 @@ export default {
     Instalment,
     TypesOfInsurance,
     AccountNumber,
-    ShortMessage
+    ShortMessage,
+    Channel
   }
 }
 </script>
