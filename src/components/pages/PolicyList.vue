@@ -31,6 +31,11 @@
           style="width: 100%"
           @selection-change="handleSelectionChange"
           height="575">
+          <el-table-column width="20">
+            <template slot-scope="scope">
+              <img src="../../assets/img/daizhifu.png" class="daizhifu" v-if="scope.row.stateOfPaymentName === '首期已支付' || scope.row.stateOfPaymentName.indexOf('已还款') > -1">
+            </template>
+          </el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="orderNo" label="订单号" min-width="150"></el-table-column>
           <el-table-column prop="insureId" label="保单号" min-width="200"></el-table-column>
@@ -48,9 +53,9 @@
           <el-table-column label="操作" width="250">
             <template slot-scope="scope">
               <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
-              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 2)" v-if="scope.row.stateOfPaymentName === '待支付'">全额支付</el-button>
-              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 1)" v-if="scope.row.stateOfPaymentName === '待支付'">首期支付</el-button>
-              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 3)" v-if="scope.row.stateOfPaymentName == '全额支付' || scope.row.stateOfPaymentName == '首期支付'">去结算</el-button>
+              <!-- <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 2)" v-if="scope.row.stateOfPaymentName === '待支付'">全额支付</el-button> -->
+              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 1)" v-if="scope.row.stateOfPaymentName === '首期已支付' || scope.row.stateOfPaymentName.indexOf('已还款') > -1">去支付</el-button>
+              <!-- <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 3)" v-if="scope.row.stateOfPaymentName == '全额支付' || scope.row.stateOfPaymentName == '首期支付'">去结算</el-button> -->
             </template>
           </el-table-column>
         </el-table>
@@ -230,6 +235,12 @@ function zero (data) {
     padding: 35px 30px;
     box-sizing: border-box;
     min-height: 790px;
+  }
+  .daizhifu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50
   }
 }
 </style>

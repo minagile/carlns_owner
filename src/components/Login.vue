@@ -82,7 +82,6 @@ export default {
             if (this.$route.query !== {}) {
               path = this.$route.query.redirect || '/Homepage'
             }
-            console.log(path)
             sessionStorage.setItem('token', res.data.token)
             sessionStorage.setItem('username', res.data.username)
             this.$router.push({path: path})

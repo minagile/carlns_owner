@@ -68,7 +68,7 @@
         </el-table-column>
         <el-table-column align="center">
           <template slot-scope="scope">
-            <el-button type="text" style="color:#5962FF;">查看详情</el-button>
+            <el-button type="text" style="color:#5962FF;" @click="openDia(scope.row.orderId, scope.row.state)">查看详情</el-button>
           </template>
         </el-table-column>
         <el-table-column align="center">
@@ -78,6 +78,99 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <el-dialog
+      :visible.sync="dialogVisible"
+      width="79.06%">
+      <div class="type">
+        <p>状态：{{nowType}}</p>
+      </div>
+      <div class="content">
+        <p class="title">
+          <img src="../../assets/img/baodanxinxi (3).png" alt="">
+          基本信息
+        </p>
+        <div class="basic">
+          <table class="noborder">
+            <tr>
+              <td>被保人姓名：{{ basicMsg.userName }}</td>
+              <td>被保人手机号：{{ basicMsg.userPhone }}</td>
+              <td>被保人身份证：{{ basicMsg.userIdCard }}</td>
+            </tr>
+            <tr>
+              <td>车架号：{{ basicMsg.carVin }}</td>
+              <td>初登日期：{{ basicMsg.firstTime }}</td>
+              <td>第一受益人：{{ basicMsg.firstBeneficiary }}</td>
+            </tr>
+            <tr>
+              <td>车牌号：{{ basicMsg.plateNum }}</td>
+              <td>订单号：{{ basicMsg.orderId }}</td>
+              <td>投保单号：{{ basicMsg.insureNo }}</td>
+            </tr>
+          </table>
+        </div>
+        <p class="title">
+          <img src="../../assets/img/baodanxinxi (1).png" alt="">
+          保单信息
+        </p>
+        <div class="basic">
+          <table class="noborder">
+            <tr>
+              <td>保险公司：{{ basicMsg.insuranceCompany }}</td>
+              <td>商业险金额：{{ basicMsg.commercialMoney }}</td>
+              <td>交强险：{{ basicMsg.SALIMoney }}</td>
+              <td>车船税：{{ basicMsg.vesselTaxMoney }}</td>
+            </tr>
+            <tr>
+              <td>车辆使用性质：{{ basicMsg.carPropety }}</td>
+              <td>商业险起止日期：{{ basicMsg.commercialStart }}<span v-if="basicMsg.commercialEnd">至</span>{{ basicMsg.commercialEnd }}</td>
+              <td colspan="2">交强险起止日期：{{ basicMsg.SALIStart }}<span v-if="basicMsg.SALIEnd">至</span>{{ basicMsg.SALIEnd }}</td>
+            </tr>
+          </table>
+          <table class="border" v-if="tableData1.head.length > 0">
+            <tr>
+              <th>承保险种</th>
+              <th>不计免赔</th>
+              <th>保险费(元)</th>
+            </tr>
+            <tr v-for="item in tableData1.head" :key="item.name">
+              <td>{{ item.name }}</td>
+              <td>{{ item.free }}</td>
+              <td>{{ item.money }}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="all">合计：{{ tableData1.amount }}</td>
+            </tr>
+          </table>
+        </div>
+        <p class="title">
+          <img src="../../assets/img/baodanxinxi (2).png" alt="">
+          分期方案
+        </p>
+        <div class="basic" style="padding-bottom: 1px;">
+          <h3><span>分期总金额：{{ basicMsg.amount }}元</span><span>分期期数：{{ basicMsg.stage }}期</span></h3>
+          <table class="border">
+            <tr>
+              <th>分期期数</th>
+              <th>还款时间</th>
+              <th>还款金额</th>
+              <th>还款状态</th>
+            </tr>
+            <tr v-for="item in stages" :key="item.name">
+              <td>{{ item.stagesSequential }}</td>
+              <td>{{ item.stagesCutoff | timeChange }}</td>
+              <td>{{ item.stagesPrice }}</td>
+              <td>
+                <span v-if="item.stagesState === 0" style="color:red">待还款</span>
+                <span v-if="item.stagesState === 1">已还款</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -101,7 +194,34 @@ export default {
       order: 0,
       order1: 0,
       order2: 0,
-      orderby: null
+      orderby: null,
+      dialogVisible: false,
+      basicMsg: {
+        userName: '',
+        carVin: '',
+        plateNum: '',
+        userPhone: '',
+        firstTime: '',
+        orderId: '',
+        userIdCard: '',
+        firstBeneficiary: '',
+        insureNo: '',
+        insuranceCompany: '',
+        carPropety: '',
+        commercialMoney: '',
+        commercialStart: '',
+        commercialEnd: '',
+        SALIMoney: '',
+        SALIStart: '',
+        SALIEnd: '',
+        vesselTaxMoney: ''
+      },
+      tableData1: {
+        amount: 0,
+        head: []
+      },
+      stages: [],
+      nowType: ''
     }
   },
   mounted () {
@@ -115,8 +235,21 @@ export default {
     this.getData('withinTheTimeLimitOrders', null)
   },
   methods: {
+    openDia (id, type) {
+      this.nowType = type
+      this.dialogVisible = true
+      this.$fetch('/admin/insure/showOrderDetails', {
+        orderId: id
+      }).then(res => {
+        if (res.code === 0) {
+          this.basicMsg = res.data
+          this.tableData1 = res.data.listShow
+          this.stages = res.data.stages
+        }
+      })
+    },
     addOrder () {
-      this.$put('/index/isRead').then(res => {
+      this.$put('/admin/index/isRead').then(res => {
         // console.log(res)
         if (res.code === 0) {
           this.$router.push('/PolicyList')
@@ -348,7 +481,17 @@ export default {
         ]
       })
     }
+  },
+  filters: {
+    timeChange (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
+    }
   }
+}
+function zero (data) {
+  if (data < 10) return '0' + data
+  return data
 }
 </script>
 
@@ -429,6 +572,108 @@ export default {
   }
   .el-table tr {
     height: 92px;
+  }
+  .el-dialog {
+    .type {
+      background-image: url('../../assets/img/typeImg.png');
+      width: 140px;
+      height: 59px;
+      position: absolute;
+      top: -5px;
+      left: 38px;
+      p {
+        font-size:14px;
+        font-family:MicrosoftYaHei;
+        font-weight:bold;
+        color:rgba(255,255,255,1);
+        margin: 17px auto;
+        text-align: center;
+      }
+    }
+    .content {
+      margin: 66px 0 0 0;
+      height: 650px;
+      overflow: auto;
+      .title {
+        font-size:14px;
+        font-family:MicrosoftYaHei;
+        font-weight:Regular;
+        color:rgba(51,51,51,1);
+        line-height:24px;
+        // margin-left: 122px;
+        width: 90%;
+        text-indent: 3%;
+        margin: 0 auto;
+        margin-top: 29px;
+        img {
+          vertical-align: middle;
+          margin: -2px 5px 0 0;
+        }
+      }
+      .basic {
+        margin: 0 auto;
+        h3 {
+          width: 81.1%;
+          text-indent: 20px;
+          margin: 0 auto;
+          font-size:14px;
+          font-family:MicrosoftYaHei;
+          font-weight:bold;
+          color:rgba(51,51,51,1);
+          line-height:24px;
+          padding-top: 30px;
+          span:last-child {
+            padding-left: 80px;
+          }
+        }
+        // margin-left: 202px;
+        table.noborder {
+          width: 79%;
+          border-collapse: collapse;
+          margin: 0 auto;
+          tr {
+            height: 50px;
+            font-size:14px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(119,119,119,1);
+          }
+          td {
+            &:first-of-type, &:nth-of-type(2) {
+              width: 33%;
+            }
+            // border: 1px solid #ccc;
+          }
+        }
+        table.border {
+          margin: 10px auto 70px auto;
+          width: 81.11%;
+          border-collapse:collapse;
+          td, th {
+            text-align: left;
+            height: 60px;
+            padding: 0 20px 0 20px;
+          }
+          th {
+            background: #EBEBEB;
+            font-size:14px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(51,51,51,1);
+          }
+          td {
+            border-bottom: 1px solid #E8EDEE;
+            font-size:14px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(119,119,119,1);
+          }
+          .all {
+            color: #2371FF;
+          }
+        }
+      }
+    }
   }
 }
 </style>

@@ -5,7 +5,7 @@
         <div style="background:#525BFF;height: 70px;width: 100%;"></div>
         <div class="face_area">
           <img src="../assets/img/7.png" alt="">
-          <div class="name">admin</div>
+          <div class="name">{{username}}</div>
         </div>
         <div class="tab_area">
           <li v-for="(o, i) in dataList" :key="i" @click="tab(o, i)" :style="{color: num === i ? '#525BFF' : '#878787'}">
@@ -74,13 +74,13 @@ export default {
           activeImg: img.active6,
           show: true
         }
-      ]
+      ],
+      username: ''
     }
   },
   mounted () {
     this.$fetch('/admin/limit/findPermission').then(res => {
       if (res.code === 0) {
-        console.log(res)
         this.dataList.forEach(v => {
           res.data.forEach(m => {
             if (m.adauthName === v.label) {
@@ -104,6 +104,7 @@ export default {
     })
     var barheight = document.documentElement.clientheight || document.body.clientHeight
     document.getElementsByClassName('sidebar')[0].style.height = barheight + 'px'
+    this.username = sessionStorage.getItem('username')
   },
   methods: {
     open7 () {

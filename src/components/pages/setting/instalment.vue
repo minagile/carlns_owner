@@ -41,6 +41,7 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
+            <el-button type="text" style="color: #5962FF;" @click="openMuban(scope.row.rateId, scope.row.templateName)">分配模板</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.rateId)">编辑</el-button>
           </template>
         </el-table-column>
@@ -70,7 +71,14 @@
             <el-input v-model="form.templateName"></el-input>
           </el-form-item>
           <el-form-item label="期数：">
-            <el-input v-model="form.stages" type="number"></el-input>
+            <el-select v-model="form.stages" :disabled="disabled " placeholder="请选择期数" style="width: 100%">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="首付款：">
             <el-input v-model="form.downPayment" type="number"></el-input>
@@ -88,6 +96,32 @@
         <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 模板分配 -->
+    <el-dialog
+      :visible.sync="show"
+      width="603px">
+      <div class="dialog-header">分配模板</div>
+      <div class="dialog-select">
+        <div class="dialog-select-input disabled">
+          <span>模板名称:</span>
+          <input type="text" v-model="name" style="background: none;">
+        </div>
+        <el-button type="primary" @click="tijiao">确 定</el-button>
+        <el-button @click="show = false">取 消</el-button>
+      </div>
+      <div class="dialog-table">
+        <table>
+          <tr>
+            <th class="first"><el-checkbox v-model="checked" :indeterminate="isIndeterminate" :disabled="disabled"></el-checkbox></th>
+            <th class="second">渠道</th>
+          </tr>
+          <tr v-for="item in tableData1" :key="item.name">
+            <td class="first"><el-checkbox v-model="item.checkbox" @change="selected(item)" :disabled="disabled"></el-checkbox></td>
+            <td class="second">{{item.name}}</td>
+          </tr>
+        </table>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -97,7 +131,21 @@ export default {
   data () {
     return {
       value: '',
-      options: [],
+      options: [
+        {
+          label: '3期',
+          value: 3
+        },
+        {
+          label: '6期',
+          value: 6
+        },
+        {
+          label: '12期',
+          value: 12
+        }
+      ],
+      disabled: false,
       multipleSelection: [],
       dialogVisible: false,
       title: '新增模板',
@@ -115,7 +163,15 @@ export default {
         platform: '',
         firstRate: ''
       },
-      id: null
+      id: null,
+      show: false,
+      tableData1: [],
+      checked: false,
+      isIndeterminate: false,
+      titleName: '',
+      deleteId: [],
+      all: [],
+      name: ''
     }
   },
   mounted () {
@@ -133,7 +189,7 @@ export default {
       this.getData()
     },
     handleSelectionChange (val) {
-      this.multipleSelection = val
+      this.all = val
     },
     openDia (msg, id) {
       this.title = msg
@@ -141,6 +197,7 @@ export default {
       if (msg === '新增模板') {
         this.form = {}
       } else {
+        this.disabled = true
         this.id = id
         this.$post('/admin/rate/findById', {
           id: id
@@ -157,14 +214,14 @@ export default {
     // 多选删除
     deleteData () {
       let id = []
-      if (this.multipleSelection.length < 1) {
+      if (this.all.length < 1) {
         this.$notify({
           type: 'warning',
           message: '未选择信息!',
           title: '警告'
         })
       } else {
-        this.multipleSelection.forEach(v => {
+        this.all.forEach(v => {
           id.push(v.rateId)
         })
         this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
@@ -246,6 +303,79 @@ export default {
           }
         })
       }
+    },
+    selected (val) {
+      if (val.checkbox === true) {
+        if (this.multipleSelection.indexOf(val) === -1) {
+          this.multipleSelection.push(val)
+        }
+      } else {
+        this.multipleSelection.splice(this.multipleSelection.indexOf(val), 1)
+      }
+    },
+    openMuban (id, name) {
+      this.name = name
+      this.multipleSelection = []
+      this.show = true
+      this.id = id
+      this.$post('/admin/rate/findChannel', {
+        rateId: id
+      }).then(res => {
+        if (res.code === 0) {
+          this.tableData1 = res.data
+        }
+      })
+    },
+    tijiao () {
+      let channelId = ''
+      this.multipleSelection.forEach(v => {
+        channelId += `${v.id},`
+      })
+      this.$post('/admin/rate/matchChannel', {
+        rateId: this.id,
+        channelId: channelId
+      }).then(res => {
+        if (res.code === 0) {
+          this.$notify({
+            type: 'success',
+            message: res.msg,
+            title: '成功'
+          })
+          this.show = false
+        } else {
+          this.$notify({
+            type: 'error',
+            title: '错误',
+            message: res.msg
+          })
+        }
+      })
+    }
+  },
+  watch: {
+    checked (val) {
+      if (val === true) {
+        this.tableData1.forEach(v => {
+          v.checkbox = true
+          this.selected(v)
+        })
+      } else {
+        this.tableData1.forEach(v => {
+          v.checkbox = false
+          this.selected(v)
+        })
+      }
+    },
+    multipleSelection (val) {
+      if (val.length === this.tableData1.length) {
+        this.checked = true
+        this.isIndeterminate = false
+      } else if (val.length === 0) {
+        this.checked = false
+        this.isIndeterminate = false
+      } else {
+        this.isIndeterminate = true
+      }
     }
   }
 }
@@ -259,6 +389,58 @@ export default {
   // height: 100%;
   .form {
     padding: 25px 120px 0 90px;
+  }
+  .disabled {
+    background: #f5f7fa;
+    cursor: not-allowed;
+    input {
+      cursor: not-allowed;
+      pointer-events:none
+    }
+  }
+  .dialog-table {
+    height: 580px;
+    overflow: auto;
+    table {
+      width: 88%;
+      margin: 0 auto;
+      th, td {
+        // width: 33%;
+        text-align: left;
+        height: 50px;
+      }
+      .first {
+        width: 238px;
+      }
+      .second {
+        width: 238px;
+      }
+    }
+  }
+  .dialog-select {
+    box-sizing: border-box;
+    padding: 30px 70px 20px 70px;
+    border-bottom: 10px solid #F3F3F3;
+    .dialog-select-input {
+      width: 251px;
+      height: 40px;
+      border:1px solid rgba(217,217,217,1);
+      border-radius:4px;
+      padding: 0 15px;
+      box-sizing: border-box;
+      display: inline-block;
+      margin-right: 17px;
+      span {
+        line-height: 40px;
+      }
+      input {
+        border: none;
+        width: 150px;
+      }
+    }
+    .cellStyle {
+      border: none!important;
+    }
   }
 }
 </style>

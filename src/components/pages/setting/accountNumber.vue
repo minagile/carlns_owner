@@ -15,6 +15,7 @@
         @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="adminPhone" label="账号"></el-table-column>
+        <el-table-column prop="adminName" label="用户名"></el-table-column>
         <el-table-column prop="reversiblePassword" label="密码" min-width="180"></el-table-column>
         <el-table-column label="添加日期">
           <template slot-scope="scope">
