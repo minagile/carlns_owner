@@ -1,7 +1,7 @@
 <template>
   <!-- 404 -->
   <div class="Error">
-    Error
+    <img src="../assets/img/notfond.png" alt="">
   </div>
 </template>
 
@@ -16,5 +16,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.Error {}
+.Error {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  img {
+    // vertical-align: middle;
+  }
+}
 </style>

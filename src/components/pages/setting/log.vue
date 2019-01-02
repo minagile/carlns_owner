@@ -14,7 +14,7 @@
         @selection-change="handleSelectionChange"
         height="580">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="logTime" label="账号"></el-table-column>
+        <el-table-column prop="adminName" label="账号"></el-table-column>
         <el-table-column prop="logTime" label="操作时间"></el-table-column>
         <el-table-column prop="logText" label="操作项" ></el-table-column>
         <el-table-column
@@ -62,7 +62,6 @@ export default {
     }
   },
   mounted () {
-    // this.pages.total = this.tableData.length
     this.getData()
   },
   methods: {
@@ -71,7 +70,7 @@ export default {
         page: this.pages.currentPage,
         pageSize: this.pages.pageSize
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.code === 0) {
           this.tableData = res.data.rows
           this.pages.total = res.data.records

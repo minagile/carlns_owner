@@ -17,9 +17,8 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="channelNo" label="渠道识别码" min-width="120"></el-table-column>
         <el-table-column prop="channelName" label="渠道名称" min-width="120"></el-table-column>
-        <el-table-column prop="templateName" label="分期模板" min-width="400"></el-table-column>
-        <el-table-column
-          label="操作">
+        <el-table-column prop="templateName" label="分期模板" min-width="100"></el-table-column>
+        <el-table-column label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑渠道', scope.row.channelId)">编辑</el-button>
             <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.channelId)">删除</el-button>

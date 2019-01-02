@@ -14,7 +14,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="adminPhone" label="账号"></el-table-column>
+        <el-table-column prop="adminPhone" label="账号" min-width="120"></el-table-column>
         <el-table-column prop="adminName" label="用户名"></el-table-column>
         <el-table-column prop="reversiblePassword" label="密码" min-width="180"></el-table-column>
         <el-table-column label="添加日期">
@@ -22,7 +22,7 @@
             <div>{{ scope.row.createTime | timeChange }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" align="center" width="200">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑账号', scope.row.adminId, scope.row.adminName)">编辑</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('设置权限', scope.row.adminId, scope.row.adminName)">设置权限</el-button>
@@ -184,7 +184,6 @@ export default {
     }
   },
   mounted () {
-    this.pages.total = this.tableData.length
     this.getData()
   },
   methods: {

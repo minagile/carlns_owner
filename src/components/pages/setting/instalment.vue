@@ -13,33 +13,14 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
         height="580">
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="templateName" label="模板名称"></el-table-column>
+        <el-table-column prop="stages" label="期数"></el-table-column>
+        <el-table-column prop="downPayment" label="首付款"></el-table-column>
+        <el-table-column prop="platform" label="服务费"></el-table-column>
+        <el-table-column prop="firstRate" label="利率" min-width="100"></el-table-column>
         <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="templateName"
-          label="模板名称">
-        </el-table-column>
-        <el-table-column
-          prop="stages"
-          label="期数">
-        </el-table-column>
-        <el-table-column
-          prop="downPayment"
-          label="首付款">
-        </el-table-column>
-        <el-table-column
-          prop="platform"
-          label="服务费">
-        </el-table-column>
-        <el-table-column
-          prop="firstRate"
-          label="利率"
-          min-width="300">
-        </el-table-column>
-        <el-table-column
-          label="操作">
+          label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openMuban(scope.row.rateId, scope.row.templateName)">分配模板</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.rateId)">编辑</el-button>

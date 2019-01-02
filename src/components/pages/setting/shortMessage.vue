@@ -23,7 +23,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="操作">
+          label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.messageId)">编辑</el-button>
             <el-button type="text" style="color: #5962FF;" @click="toDelete(scope.row.messageId)">删除</el-button>
