@@ -40,24 +40,23 @@
             </template>
           </el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="orderNo" label="订单号"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号" min-width="130"></el-table-column>
           <el-table-column prop="plateNum" label="车牌号"></el-table-column>
           <el-table-column prop="username" label="姓名"></el-table-column>
-          <el-table-column prop="tel" label="手机号"></el-table-column>
+          <el-table-column prop="tel" label="手机号" min-width="120"></el-table-column>
           <el-table-column prop="channelName" label="订单来源"></el-table-column>
           <el-table-column prop="company" label="保险公司"></el-table-column>
           <el-table-column prop="insureMoney" label="每期金额/总金额" min-width="130"></el-table-column>
-          <el-table-column label="还款时间">
+          <el-table-column label="还款时间" width="100">
             <template slot-scope="scope">
               {{ scope.row.createTime | timeChange }}
             </template>
           </el-table-column>
           <el-table-column prop="orderState" label="保单状态"></el-table-column>
-          <el-table-column label="支付状态">
+          <el-table-column label="支付状态" min-width="120">
             <template slot-scope="scope">
               {{ scope.row.moneyState | state }}
-              <span :style="{'color': scope.row.state === 0 && scope.row.moneyState === 1 ? 'red': ''}">{{ scope.row.overStage.split('/')[0] }}</span>/
-              <span>{{ scope.row.overStage.split('/')[1] }}</span>
+              <span :style="{'color': scope.row.state === 0 && scope.row.moneyState === 1 ? 'red': ''}">{{ scope.row.overStage.split('/')[0] }}</span>/<span>{{ scope.row.overStage.split('/')[1] }}</span>
             </template>
           </el-table-column>
           <!-- <el-table-column prop="orderState" label="订单状态"></el-table-column> -->
@@ -179,9 +178,13 @@ export default {
       }
     },
     handleSizeChange (val) {
+      this.pages.pageSize = val
+      this.getData()
       // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
+      this.pages.currentPage = val
+      this.getData()
       // console.log(`当前页: ${val}`)
     },
     handleSelectionChange (val) {

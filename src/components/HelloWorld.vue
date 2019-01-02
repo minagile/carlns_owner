@@ -88,6 +88,7 @@ export default {
   mounted () {
     this.$fetch('/admin/limit/findPermission').then(res => {
       if (res.code === 0) {
+        sessionStorage.setItem('permission', JSON.stringify(res.data))
         this.dataList.forEach(v => {
           res.data.forEach(m => {
             if (m.adauthName === v.label) {

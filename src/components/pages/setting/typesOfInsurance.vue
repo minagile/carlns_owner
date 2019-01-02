@@ -13,35 +13,10 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
         height="580">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="billId"
-          label="编号">
-        </el-table-column>
-        <el-table-column
-          prop="templateName"
-          label="模板名称"
-          min-width="300">
-        </el-table-column>
-        <!-- <el-table-column
-          prop="address"
-          label="首付款">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="服务费">
-        </el-table-column> -->
-        <!-- <el-table-column
-          prop="address"
-          label="利率"
-          min-width="300">
-        </el-table-column> -->
-        <el-table-column
-          label="操作"
-          width="150">
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="billId" label="编号" min-width="90"></el-table-column>
+        <el-table-column prop="templateName" label="模板名称" min-width="100"></el-table-column>
+        <el-table-column label="操作" width="150"  align="center">
           <template slot-scope="scope">
             <el-button type="text" style="color: #5962FF;" @click="openDia('查看模板', scope.row.billId)">查看</el-button>
             <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.billId)">编辑</el-button>

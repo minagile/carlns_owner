@@ -19,5 +19,6 @@ i, b {font-weight: normal;font-style: normal;}
 #app {
   height: 100%;
   background: #F4F8F9;
+  min-width: 1200px;
 }
 </style>
