@@ -165,6 +165,7 @@
               <td>
                 <span v-if="item.stagesState === 0" style="color:red">待还款</span>
                 <span v-if="item.stagesState === 1">已还款</span>
+                <span v-if="item.stagesState === 2" style="color:red">已逾期</span>
               </td>
             </tr>
           </table>

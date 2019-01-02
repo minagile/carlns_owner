@@ -180,9 +180,13 @@ export default {
     },
     handleSizeChange (val) {
       // console.log(`每页 ${val} 条`)
+      this.pages.pageSize = val
+      this.getData()
     },
     handleCurrentChange (val) {
       // console.log(`当前页: ${val}`)
+      this.pages.currentPage = val
+      this.getData()
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
@@ -239,7 +243,7 @@ function zero (data) {
 .StageManagement {
   overflow: auto;
   .stage {
-    height: 101%;
+    height: 100%;
     padding: 35px 30px;
     box-sizing: border-box;
   }

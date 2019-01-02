@@ -50,11 +50,10 @@
           <el-table-column prop="premium" label="保费合计"></el-table-column>
           <el-table-column prop="orderStateName" label="保单状态"></el-table-column>
           <el-table-column prop="stateOfPaymentName" label="支付状态"></el-table-column>
-          <el-table-column label="操作" width="250">
+          <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
               <!-- <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 2)" v-if="scope.row.stateOfPaymentName === '待支付'">全额支付</el-button> -->
-              <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 1)" v-if="scope.row.stateOfPaymentName === '首期已支付' || scope.row.stateOfPaymentName.indexOf('已还款') > -1">去支付</el-button>
               <!-- <el-button type="text" style="color: red;" @click="pay(scope.row.orderId, 3)" v-if="scope.row.stateOfPaymentName == '全额支付' || scope.row.stateOfPaymentName == '首期支付'">去结算</el-button> -->
             </template>
           </el-table-column>

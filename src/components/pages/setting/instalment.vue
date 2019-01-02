@@ -373,7 +373,7 @@ export default {
       }
     },
     multipleSelection (val) {
-      if (val.length === this.tableData1.length) {
+      if (val.length === this.tableData1.length && val.length !== 0) {
         this.checked = true
         this.isIndeterminate = false
       } else if (val.length === 0) {
