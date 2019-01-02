@@ -208,7 +208,7 @@ export default {
         background: linear-gradient(142.68deg,rgba(89,98,255,1) 0%,rgba(130,101,255,1) 100%);
       }
       .body {
-        margin: 105px 40px 40px;
+        margin: 104px 40px 40px;
         background: #fff;
         height: calc(100% - 80px - 70px);
         border-radius: 5px;
