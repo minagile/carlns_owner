@@ -34,24 +34,37 @@
           v-loading="loading"
           @selection-change="handleSelectionChange"
           height="580">
+          <el-table-column width="1">
+            <template slot-scope="scope">
+              <img src="../../assets/img/wait.png" v-if="scope.row.state === 0 && scope.row.moneyState === 1" alt="">
+            </template>
+          </el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="orderNo" label="订单号"></el-table-column>
           <el-table-column prop="plateNum" label="车牌号"></el-table-column>
           <el-table-column prop="username" label="姓名"></el-table-column>
           <el-table-column prop="tel" label="手机号"></el-table-column>
           <el-table-column prop="channelName" label="订单来源"></el-table-column>
-          <el-table-column prop="quotationSource" label="报价来源"></el-table-column>
-          <el-table-column prop="overStage" label="分期状态"></el-table-column>
           <el-table-column prop="company" label="保险公司"></el-table-column>
-          <el-table-column label="提交时间">
+          <el-table-column prop="insureMoney" label="每期金额/总金额" min-width="130"></el-table-column>
+          <el-table-column label="还款时间">
             <template slot-scope="scope">
               {{ scope.row.createTime | timeChange }}
             </template>
           </el-table-column>
-          <el-table-column prop="orderState" label="订单状态"></el-table-column>
-          <el-table-column label="操作">
+          <el-table-column prop="orderState" label="保单状态"></el-table-column>
+          <el-table-column label="支付状态">
+            <template slot-scope="scope">
+              {{ scope.row.moneyState | state }}
+              <span :style="{'color': scope.row.state === 0 && scope.row.moneyState === 1 ? 'red': ''}">{{ scope.row.overStage.split('/')[0] }}</span>/
+              <span>{{ scope.row.overStage.split('/')[1] }}</span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column prop="orderState" label="订单状态"></el-table-column> -->
+          <el-table-column label="操作" width="150">
             <template slot-scope="scope">
               <el-button type="text" style="color: #5962FF;" @click="openDia(scope.row.orderId)">查看详情</el-button>
+              <el-button type="text" style="color: #FF0000;" v-if="scope.row.state === 0 && scope.row.moneyState === 1" @click="pay(scope.row.stageId)">去支付</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -108,6 +121,37 @@ export default {
     this.getList()
   },
   methods: {
+    pay (id) {
+      this.$confirm('是否已支付此次订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$post('/admin/insure/update', {'stageId': id}).then(res => {
+          console.log(res)
+          if (res.code === 0) {
+            this.$notify({
+              type: 'success',
+              title: '支付',
+              message: '支付成功!'
+            })
+            this.getData()
+          } else {
+            this.$notify({
+              type: 'error',
+              title: '支付',
+              message: res.msg
+            })
+          }
+        })
+      }).catch(() => {
+        this.$notify({
+          type: 'info',
+          title: '支付',
+          message: '已取消支付'
+        })
+      })
+    },
     // 批量删除
     deleteData () {
       if (this.multipleSelection.length > 0) {
@@ -173,6 +217,12 @@ export default {
     }
   },
   filters: {
+    state (data) {
+      if (data === 0) return '待还款'
+      if (data === 1) return '已还款'
+      if (data === 2) return '已逾期'
+      return ''
+    },
     timeChange (data) {
       let date = new Date(data)
       return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
@@ -192,6 +242,16 @@ function zero (data) {
     height: 101%;
     padding: 35px 30px;
     box-sizing: border-box;
+  }
+  .el-table .cell {
+    position: relative;
+  }
+  .el-table .cell img {
+    // width: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
   }
 }
 </style>

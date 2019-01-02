@@ -321,8 +321,14 @@ export default {
       this.$post('/admin/rate/findChannel', {
         rateId: id
       }).then(res => {
+        // console.log(res)
         if (res.code === 0) {
           this.tableData1 = res.data
+          res.data.forEach(v => {
+            if (v.checkbox === true) {
+              this.multipleSelection.push(v)
+            }
+          })
         }
       })
     },

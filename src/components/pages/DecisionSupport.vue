@@ -7,26 +7,16 @@
       <div class="change_pandect">
         <div class="change_curve" v-for="(o, i) in 4" :key="i">
           <h6>全额投保订单数</h6>
-          <p><i>2341</i><b>同比 0.36%</b></p>
+          <p>
+            <i>2341</i>
+            <b>同比 0.36%</b>
+            <img src="../../assets/img/arrow_down.png" v-show="false" alt="">
+            <img src="../../assets/img/arrow_up.png" alt="">
+          </p>
           <div :id="'curve' + i" style="width: 100%;height: 80px;"></div>
         </div>
       </div>
     </div>
-    <!-- 来源分析 -->
-    <el-row type="flex" class="row-bg center" justify="space-around">
-      <el-col :span="16">
-        <div class="grid-content">
-          <ChartHeader :title="'来源分析'"/>
-          <div id="scatter" style="width: 100%;height:448px;"></div>
-        </div>
-      </el-col>
-      <el-col :span="7">
-        <div class="grid-content">
-          <ChartHeader :title="'来源统计TOP5'"/>
-          <div id="pie0" style="width: 100%;height:448px;"></div>
-        </div>
-      </el-col>
-    </el-row>
     <!-- 交易分析 -->
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
@@ -54,6 +44,21 @@
         <div class="grid-content">
           <ChartHeader :title="'性别'"/>
           <div id="pie1" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+    </el-row>
+    <!-- 来源分析 -->
+    <el-row type="flex" class="row-bg center" justify="space-around">
+      <el-col :span="16">
+        <div class="grid-content">
+          <ChartHeader :title="'来源分析'"/>
+          <div id="scatter" style="width: 100%;height:448px;"></div>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div class="grid-content">
+          <ChartHeader :title="'来源统计TOP5'"/>
+          <div id="pie0" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
     </el-row>
@@ -528,15 +533,15 @@ export default {
         },
         series: [
           {
-            barGap: '-100%',
-            itemStyle: {
-              normal: {
-                color: '#eee'
-              }
-            },
+            type: 'bar',
             barWidth: 50,
-            data: [200, 200, 200, 200, 200, 200, 200],
-            type: 'bar'
+            itemStyle: {
+              normal: {color: 'rgba(0,0,0,0.05)'}
+            },
+            barGap: '-100%',
+            barCategoryGap: '40%',
+            data: [300, 300, 300, 300, 300, 300, 300],
+            animation: false
           },
           {
             // barGap: '-100%',
@@ -592,6 +597,9 @@ export default {
             font-weight:400;
             color:rgba(51,51,51,1);
             padding-right: 14px;
+          }
+          img {
+            width: 10px;
           }
         }
       }

@@ -205,17 +205,29 @@ button {
   height: 0px;
 }
 
-.el-range-editor .el-range-input {
+.DecisionSupport .el-range-editor .el-range-input {
   background: rgba(0, 0, 0, 0);
   color: #54A8FD;
 }
-.el-range-editor .el-range-input::-webkit-input-placeholder {
+.DecisionSupport .el-range-editor .el-range-input::-webkit-input-placeholder {
   color: #54A8FD;
 }
-.el-date-editor .el-range-separator {
+.DecisionSupport .el-date-editor .el-range-separator {
   color: #54A8FD;
 }
-.el-date-editor .el-range__icon {
+.DecisionSupport .el-date-editor .el-range__icon {
   color: rgba(0, 0, 0, 0);
-  width: 50px;
+  width: 130px;
+}
+
+.DecisionSupport .el-select .el-input__inner {
+  border: 0;
+  background: rgba(0, 0, 0, 0);
+  /* padding: 0; */
+  font-size: 10px;
+}
+
+.el-badge__content.is-fixed {
+  top: 18px;
+  right: 0px;
 }
