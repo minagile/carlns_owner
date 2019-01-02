@@ -54,16 +54,16 @@
         max-height="700"
         :data="tableData"
         style="width: 96%;margin: 0 auto;">
-        <el-table-column prop="orderNo" label="订单号" min-width="100"></el-table-column>
+        <el-table-column prop="orderNo" label="订单号" min-width="140"></el-table-column>
         <el-table-column prop="userName" label="姓名"></el-table-column>
         <el-table-column prop="carNo" label="车牌"></el-table-column>
         <el-table-column prop="orderResource" label="订单来源"></el-table-column>
         <el-table-column prop="total" label="投保金额"></el-table-column>
         <el-table-column prop="installmentState" label="分期状态"></el-table-column>
-        <el-table-column prop="repaymentDate" label="还款日期"></el-table-column>
+        <el-table-column prop="repaymentDate" label="还款日期" width="100"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <span style="color:red;">{{scope.row.state}}</span>
+            <span style="color:red;">{{ scope.row.state }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center">
