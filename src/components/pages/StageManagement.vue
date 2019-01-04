@@ -40,7 +40,7 @@
             </template>
           </el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="orderNo" label="订单号" min-width="130"></el-table-column>
+          <el-table-column prop="orderNo" label="订单号" min-width="140"></el-table-column>
           <el-table-column prop="plateNum" label="车牌号"></el-table-column>
           <el-table-column prop="username" label="姓名"></el-table-column>
           <el-table-column prop="tel" label="手机号" min-width="120"></el-table-column>
