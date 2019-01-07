@@ -40,7 +40,7 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'用户分析'" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'用户分析'" :num="10" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="scatter1" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -122,15 +122,108 @@ export default {
       startTime: '',
       endTime: '',
       lebels: ['全额投保订单数', '分期投保订单数', '访客数', '支付转化率'],
-      list: ['KPIIndex', 'transactionAnalysis', 'overdueRateAndSurrenderRate', 'gender', 'streamAnalysis', 'sourceStatisticsTop5', 'carAge', 'pattern', 'ageCount', 'periods']
+      list: ['KPIIndex', 'transactionAnalysis', 'overdueRateAndSurrenderRate', 'gender', 'streamAnalysis', 'sourceStatisticsTop5', 'carAge', 'pattern', 'ageCount', 'periods', 'areaCount']
     }
   },
   mounted () {
     this.list.forEach(v => {
       this.getKPIData(v)
     })
+    // this.getKPIData('areaCount')
   },
   methods: {
+    // 用户分析
+    getScatterCharts1 (data) {
+      // console.log(data)
+      var myChart = echarts.init(document.getElementById('scatter1'))
+      // var myChart1 = echarts.init(document.getElementById('scatter1'))
+      // var data = [
+      //   [44056, 81.8, 23968973, 'Australia', 2015]
+      //     x      y      size        name
+      // ]
+      // address: "云南省" 地区
+      // amount: 27 投保总额
+      // amountAvg: 13.5 人均投保额
+      // headCount: 2 人数
+      // hit: 34 投保次数
+      // hitAvg: 17 人均投保次数
+      var data1 = []
+      data.forEach(v => {
+        data1.push([v.hitAvg, v.amountAvg, v.headCount, v.address])
+      })
+      var options = {
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params, ticket, callback) {
+            // console.log(params)
+            return '人均购买次数：' + params.data[0] + '<br />人均购买金额：' + params.data[1] + '<br />人数：' + params.data[2] + '<br />地区：' + params.data[3]
+          }
+        },
+        grid: {
+          left: '6%',
+          top: '10%',
+          right: '12%',
+          bottom: '10%'
+        },
+        xAxis: {
+          name: '人均购买次数（次）',
+          axisLine: { show: false },
+          splitLine: {
+            show: false
+          }
+        },
+        yAxis: {
+          name: '人均购买金额（元）',
+          splitLine: {
+            lineStyle: {
+              type: 'solid'
+            }
+          },
+          axisLine: { show: false },
+          axisTick: { show: false },
+          scale: true
+        },
+        series: [
+          {
+            // name: '2015',
+            data: data1,
+            type: 'scatter',
+            symbolSize: function (data) {
+              // console.log(Math.sqrt(data[2]))
+              return data[2]
+            },
+            label: {
+              normal: {
+                show: true,
+                color: '#000',
+                position: 'top',
+                formatter: function (param) {
+                  // console.log(param)
+                  return param.data[3]
+                }
+              },
+              emphasis: {
+                show: true,
+                color: '#000',
+                formatter: function (param) {
+                  // console.log(param)
+                  return param.data[3]
+                },
+                position: 'top'
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: '#c9e1f8',
+                borderColor: '#a2caf2'
+              }
+            }
+          }
+        ]
+      }
+      myChart.setOption(options)
+      // myChart1.setOption(options)
+    },
     dateChage (data) {
       // console.log(data)
       this.time = data[0]
@@ -166,9 +259,10 @@ export default {
             this.OverLinecharts(res.data)
           }
           // 用户分析
-          // if (data === 'ageCount') {
-          //   // console.log(res)
-          // }
+          if (data === 'areaCount') {
+            // console.log(res)
+            this.getScatterCharts1(res.data)
+          }
           // 性别
           if (data === 'gender') {
             var arr = []
@@ -282,33 +376,36 @@ export default {
         }]
       })
     },
-    // 气泡图
+    // 气泡图来源分析
     getScatterCharts (data) {
       // console.log(data)
       var myChart = echarts.init(document.getElementById('scatter'))
       // var myChart1 = echarts.init(document.getElementById('scatter1'))
       // var data = [
       //   [44056, 81.8, 23968973, 'Australia', 2015]
+      //     x       y
       // ]
       var data1 = []
       data.forEach(v => {
-        data1.push([v.avgPrice, v.headCount, v.price, v.channelName])
+        data1.push([v.headCount, v.price, v.avgPrice, v.channelName])
       })
       var options = {
         tooltip: {
           trigger: 'item',
           formatter: function (params, ticket, callback) {
             // console.log(params)
-            return '渠道名：' + params.data[3] + '<br />人均投保额：' + params.data[0] + '<br />人头数：' + params.data[1] + '<br />投保总额：' + params.data[2]
+            return '渠道名：' + params.data[3] + '<br />人均投保额：' + params.data[2] + '<br />人数：' + params.data[0] + '<br />投保总额：' + params.data[1]
           }
         },
         xAxis: {
+          name: '投保人数',
           axisLine: { show: false },
           splitLine: {
             show: false
           }
         },
         yAxis: {
+          name: '保额总数（万元）',
           splitLine: {
             lineStyle: {
               type: 'solid'
@@ -436,11 +533,13 @@ export default {
           }
         },
         xAxis: {
+          name: '日期',
           type: 'category',
           boundaryGap: false,
           data: data.xData
         },
         yAxis: {
+          name: '保额总数（万元）',
           splitLine: {
             lineStyle: {
               type: 'solid'
@@ -508,7 +607,7 @@ export default {
         grid: {
           top: '10%',
           left: '3%',
-          right: '4%',
+          right: '8%',
           bottom: '18%',
           containLabel: true
         },
@@ -518,6 +617,7 @@ export default {
           }
         },
         xAxis: {
+          name: '月份',
           type: 'category',
           boundaryGap: false,
           data: data.xData
@@ -547,6 +647,7 @@ export default {
           bottom: '10%'
         },
         xAxis: {
+          name: '车龄',
           type: 'category',
           axisLine: { show: false },
           axisTick: { show: false },
@@ -585,13 +686,14 @@ export default {
           bottom: '10%'
         },
         xAxis: {
+          name: '年龄',
           type: 'category',
           axisLine: { show: false },
           axisTick: { show: false },
           data: data.xData
         },
         yAxis: {
-          name: '数量',
+          name: '占比',
           splitLine: {
             lineStyle: {
               type: 'solid'
