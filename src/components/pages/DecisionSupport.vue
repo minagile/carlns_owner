@@ -422,7 +422,7 @@ export default {
             res.data.forEach(v => {
               arr2.push(v.name)
             })
-            this.getPiecharts(0, {
+            this.getPiecharts1(0, {
               color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
               legend: arr2,
               data: res.data
@@ -588,6 +588,63 @@ export default {
       myChart.setOption(options)
       // myChart1.setOption(options)
     },
+    getPiecharts1 (i, data, text) {
+      var myChart = echarts.init(document.getElementById('pie' + i))
+      var options = {
+        color: data.color,
+        // title: {
+        //   text: '23456\n总人数',
+        //   left: '34%',
+        //   top: '45%'
+        // },
+        tooltip: {
+          show: false
+          // trigger: 'item',
+          // formatter: '{b}: {c}'
+        },
+        legend: {
+          orient: 'vertical',
+          y: 'center',
+          right: '8%',
+          data: data.legend,
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 10,
+          itemGap: 20,
+          textStyle: {
+            fontSize: 12,
+            padding: [0, 0, 0, 6]
+          }
+        },
+        series: [
+          {
+            name: '',
+            type: 'pie',
+            radius: ['35%', '60%'],
+            avoidLabelOverlap: false,
+            center: ['40%', '50%'],
+            label: {
+              normal: {
+                show: true,
+                // position: 'inside',
+                // formatter: text + ': {b}\n\n数量: {c}'
+                formatter: function (val) {
+                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true,
+                length: 30
+              }
+            },
+            data: data.data
+          }
+        ]
+      }
+      myChart.setOption(options)
+    },
     // 饼图
     getPiecharts (i, data, text) {
       var myChart = echarts.init(document.getElementById('pie' + i))
@@ -628,12 +685,15 @@ export default {
               normal: {
                 show: true,
                 // position: 'inside',
-                formatter: text + ': {b} \n数量: {c}'
+                formatter: function (val) {
+                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                }
               }
             },
             labelLine: {
               normal: {
-                show: true
+                show: true,
+                length: 30
               }
             },
             data: data.data
