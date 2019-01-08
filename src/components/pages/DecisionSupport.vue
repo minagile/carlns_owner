@@ -3,31 +3,35 @@
   <div class="DecisionSupport">
     <!-- KPI指标 -->
     <div class="header">
-      <ChartHeader :title="'KPI指标'"/>
+      <ChartHeader :title="'KPI指标'" :num="0" @dateChage="dateChage" @timeChage="timeChage"/>
       <div class="change_pandect">
-        <div class="change_curve" v-for="(o, i) in 4" :key="i">
-          <h6>全额投保订单数</h6>
+        <div class="change_curve" v-for="(o, i) in KPIlist" :key="i">
+          <h6>{{ lebels[i] }}</h6>
           <p>
-            <i>2341</i>
-            <b>同比 0.36%</b>
-            <img src="../../assets/img/arrow_down.png" v-show="false" alt="">
-            <img src="../../assets/img/arrow_up.png" alt="">
+            <i>{{ o.count }}</i>
+            <b v-if="o.percentage !== 0">同比 {{ o.percentage }}</b>
+            <img src="../../assets/img/arrow_down.png" v-show="o.percentage !== 0 && o.on === 0" alt="">
+            <img src="../../assets/img/arrow_up.png" v-show="o.percentage !== 0 && o.on === 1" alt="">
           </p>
-          <div :id="'curve' + i" style="width: 100%;height: 80px;"></div>
+          <!-- <div :id="'curve' + i" style="width: 100%;height: 80px;"></div> -->
+          <div style="width: 100%;height: 80px;">
+            <Curve :linex="o.x" :liney="o.y" :i="i" />
+          </div>
         </div>
       </div>
     </div>
+    <!-- <Curve /> -->
     <!-- 交易分析 -->
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'交易分析'"/>
+          <ChartHeader :title="'交易分析'" :num="1" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="line" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'逾期与退保率'"/>
+          <ChartHeader :title="'逾期与退保率'" :num="2" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="overline" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -36,13 +40,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'用户分析'"/>
+          <ChartHeader :title="'用户分析'" :num="10" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="scatter1" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'性别'"/>
+          <ChartHeader :title="'性别'" :num="3" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie1" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -51,13 +55,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'来源分析'"/>
+          <ChartHeader :title="'来源分析'" :num="4" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="scatter" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'来源统计TOP5'"/>
+          <ChartHeader :title="'来源统计TOP5'" :num="5" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie0" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -66,13 +70,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'车型'"/>
+          <ChartHeader :title="'车型'" :num="6" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'模式'"/>
+          <ChartHeader :title="'模式'" :num="7" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie2" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -81,13 +85,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'年龄'"/>
+          <ChartHeader :title="'年龄'" :num="8" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar_line" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'期数'"/>
+          <ChartHeader :title="'期数'" :num="9" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie3" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -97,6 +101,7 @@
 
 <script>
 import ChartHeader from '../common/ChartHeader'
+import Curve from './charts/Curve'
 var echarts = require('echarts/lib/echarts')
 // 引入柱状图
 require('echarts/lib/chart/bar')
@@ -112,60 +117,222 @@ export default {
   name: 'DecisionSupport',
   data () {
     return {
+      KPIlist: [{}, {}, {}, {}],
+      time: '5',
+      startTime: '',
+      endTime: '',
+      lebels: ['全额投保订单数', '分期投保订单数', '访客数', '支付转化率'],
+      list: ['KPIIndex', 'transactionAnalysis', 'overdueRateAndSurrenderRate', 'gender', 'streamAnalysis', 'sourceStatisticsTop5', 'carAge', 'pattern', 'ageCount', 'periods', 'areaCount']
     }
   },
   mounted () {
-    this.getBarcharts(0)
-    this.getBarcharts(1)
-    this.getBarcharts(2)
-    this.getBarcharts(3)
-    // this.getPiecharts()
-    this.getPiecharts(0, {
-      color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
-      legend: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎'],
-      data: [
-        {value: 335, name: '直接访问'},
-        {value: 310, name: '邮件营销'},
-        {value: 234, name: '联盟广告'},
-        {value: 135, name: '视频广告'},
-        {value: 1548, name: '搜索引擎'}
-      ]
+    this.list.forEach(v => {
+      this.getKPIData(v)
     })
-    this.getPiecharts(1, {
-      color: ['#35A3FF', '#FFCBDB'],
-      legend: ['直接访问', '邮件营销'],
-      data: [
-        {value: 335, name: '直接访问'},
-        {value: 310, name: '邮件营销'}
-      ]
-    })
-    this.getPiecharts(2, {
-      color: ['#04AAFE', '#0593FF', '#6BC4FF'],
-      legend: ['直接访问', '邮件营销', '邮件营'],
-      data: [
-        {value: 335, name: '直接访问'},
-        {value: 310, name: '邮件营销'},
-        {value: 310, name: '邮件营'}
-      ]
-    })
-    this.getPiecharts(3, {
-      color: ['#4AA8F6', '#3DBDA2', '#FCB738'],
-      legend: ['直接访问', '邮件营销', '邮件营'],
-      data: [
-        {value: 335, name: '直接访问'},
-        {value: 310, name: '邮件营销'},
-        {value: 310, name: '邮件营'}
-      ]
-    })
-    this.getScatterCharts()
-    this.getLinecharts()
-    this.OverLinecharts()
-    this.BarCarCharts()
-    this.BarFullCarCharts()
+    // this.getKPIData('areaCount')
   },
   methods: {
+    // 用户分析
+    getScatterCharts1 (data) {
+      // console.log(data)
+      var myChart = echarts.init(document.getElementById('scatter1'))
+      // var myChart1 = echarts.init(document.getElementById('scatter1'))
+      // var data = [
+      //   [44056, 81.8, 23968973, 'Australia', 2015]
+      //     x      y      size        name
+      // ]
+      // address: "云南省" 地区
+      // amount: 27 投保总额
+      // amountAvg: 13.5 人均投保额
+      // headCount: 2 人数
+      // hit: 34 投保次数
+      // hitAvg: 17 人均投保次数
+      var data1 = []
+      data.forEach(v => {
+        data1.push([v.hitAvg, v.amountAvg, v.headCount, v.address])
+      })
+      var options = {
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params, ticket, callback) {
+            // console.log(params)
+            return '人均购买次数：' + params.data[0] + '<br />人均购买金额：' + params.data[1] + '<br />人数：' + params.data[2] + '<br />地区：' + params.data[3]
+          }
+        },
+        grid: {
+          left: '6%',
+          top: '10%',
+          right: '12%',
+          bottom: '10%'
+        },
+        xAxis: {
+          name: '人均购买次数（次）',
+          axisLine: { show: false },
+          splitLine: {
+            show: false
+          }
+        },
+        yAxis: {
+          name: '人均购买金额（元）',
+          splitLine: {
+            lineStyle: {
+              type: 'solid'
+            }
+          },
+          axisLine: { show: false },
+          axisTick: { show: false },
+          scale: true
+        },
+        series: [
+          {
+            // name: '2015',
+            data: data1,
+            type: 'scatter',
+            symbolSize: function (data) {
+              // console.log(Math.sqrt(data[2]))
+              return data[2]
+            },
+            label: {
+              normal: {
+                show: true,
+                color: '#000',
+                position: 'top',
+                formatter: function (param) {
+                  // console.log(param)
+                  return param.data[3]
+                }
+              },
+              emphasis: {
+                show: true,
+                color: '#000',
+                formatter: function (param) {
+                  // console.log(param)
+                  return param.data[3]
+                },
+                position: 'top'
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: '#c9e1f8',
+                borderColor: '#a2caf2'
+              }
+            }
+          }
+        ]
+      }
+      myChart.setOption(options)
+      // myChart1.setOption(options)
+    },
+    dateChage (data) {
+      // console.log(data)
+      this.time = data[0]
+      this.startTime = ''
+      this.endTime = ''
+      this.getKPIData(this.list[data[1]])
+    },
+    timeChage (data) {
+      this.time = ''
+      this.startTime = data[0][0]
+      this.endTime = data[0][1]
+      this.getKPIData(this.list[data[1]])
+    },
+    // kpi指标
+    getKPIData (data) {
+      this.$fetch('/admin/report/' + data, {
+        date: this.time,
+        startTime: this.startTime,
+        endTime: this.endTime
+      }).then(res => {
+        if (res.code === 0) {
+          // 缩略图
+          if (data === 'KPIIndex') {
+            this.KPIlist = [res.data.full, res.data.stages, res.data.visitor, res.data.conversion]
+          }
+          // 交易分析
+          if (data === 'transactionAnalysis') {
+            this.getLinecharts(res.data)
+          }
+          // 逾期和退保率
+          if (data === 'overdueRateAndSurrenderRate') {
+            // console.log(res)
+            this.OverLinecharts(res.data)
+          }
+          // 用户分析
+          if (data === 'areaCount') {
+            // console.log(res)
+            this.getScatterCharts1(res.data)
+          }
+          // 性别
+          if (data === 'gender') {
+            var arr = []
+            res.data.forEach(v => {
+              arr.push(v.name)
+            })
+            this.getPiecharts(1, {
+              color: ['#35A3FF', '#FFCBDB'],
+              legend: arr,
+              data: res.data
+            })
+          }
+          // 来源分析
+          if (data === 'streamAnalysis') {
+            // console.log(res)
+            this.getScatterCharts(res.data)
+          }
+          // top5
+          if (data === 'sourceStatisticsTop5') {
+            var arr2 = []
+            res.data.forEach(v => {
+              arr2.push(v.name)
+            })
+            this.getPiecharts(0, {
+              color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
+              legend: arr2,
+              data: res.data
+            })
+          }
+          // 车型
+          if (data === 'carAge') {
+            // console.log(res)
+            this.BarCarCharts(res.data)
+          }
+          // 模式
+          if (data === 'pattern') {
+            // console.log(res)
+            var arrr = []
+            res.data.forEach(v => {
+              arrr.push(v.name)
+            })
+            this.getPiecharts(2, {
+              color: ['#04AAFE', '#0593FF', '#6BC4FF'],
+              legend: arrr,
+              data: res.data
+            })
+          }
+          // 年龄
+          if (data === 'ageCount') {
+            // console.log(res)
+            this.BarFullCarCharts(res.data)
+          }
+          // 期数
+          if (data === 'periods') {
+            // console.log(res)
+            var arr5 = []
+            res.data.forEach(v => {
+              arr5.push(v.name)
+            })
+            this.getPiecharts(3, {
+              color: ['#4AA8F6', '#3DBDA2', '#FCB738'],
+              legend: arr5,
+              data: res.data
+            })
+          }
+        }
+      })
+    },
     // 折线缩略图
-    getBarcharts (i) {
+    getBarcharts (i, x, y) {
       var myChart = echarts.init(document.getElementById('curve' + i))
       myChart.setOption({
         color: ['#60b5f9'],
@@ -187,7 +354,7 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [800, 932, 23, 934, 12, 1330, 32],
+          data: [34, 23, 12, 3, 54, 23],
           type: 'line',
           smooth: true,
           areaStyle: {
@@ -209,43 +376,36 @@ export default {
         }]
       })
     },
-    // 气泡图
-    getScatterCharts () {
+    // 气泡图来源分析
+    getScatterCharts (data) {
+      // console.log(data)
       var myChart = echarts.init(document.getElementById('scatter'))
-      var myChart1 = echarts.init(document.getElementById('scatter1'))
-      var data = [
-        [44056, 81.8, 23968973, 'Australia', 2015],
-        [43294, 81.7, 35939927, 'Canada', 2015],
-        [13334, 76.9, 1376048943, 'China', 2015],
-        [21291, 78.5, 11389562, 'Cuba', 2015],
-        [38923, 80.8, 5503457, 'Finland', 2015],
-        [37599, 81.9, 64395345, 'France', 2015],
-        [44053, 81.1, 80688545, 'Germany', 2015],
-        [42182, 82.8, 329425, 'Iceland', 2015],
-        [5903, 66.8, 1311050527, 'India', 2015],
-        [36162, 83.5, 126573481, 'Japan', 2015],
-        [1390, 71.4, 25155317, 'North Korea', 2015],
-        [34644, 80.7, 50293439, 'South Korea', 2015],
-        [34186, 80.6, 4528526, 'New Zealand', 2015],
-        [64304, 81.6, 5210967, 'Norway', 2015],
-        [24787, 77.3, 38611794, 'Poland', 2015],
-        [23038, 73.13, 143456918, 'Russia', 2015],
-        [19360, 76.5, 78665830, 'Turkey', 2015],
-        [38225, 81.4, 64715810, 'United Kingdom', 2015],
-        [53354, 79.1, 321773631, 'United States', 2015]
-      ]
+      // var myChart1 = echarts.init(document.getElementById('scatter1'))
+      // var data = [
+      //   [44056, 81.8, 23968973, 'Australia', 2015]
+      //     x       y
+      // ]
+      var data1 = []
+      data.forEach(v => {
+        data1.push([v.headCount, v.price, v.avgPrice, v.channelName])
+      })
       var options = {
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{c}'
+          formatter: function (params, ticket, callback) {
+            // console.log(params)
+            return '渠道名：' + params.data[3] + '<br />人均投保额：' + params.data[2] + '<br />人数：' + params.data[0] + '<br />投保总额：' + params.data[1]
+          }
         },
         xAxis: {
+          name: '投保人数',
           axisLine: { show: false },
           splitLine: {
             show: false
           }
         },
         yAxis: {
+          name: '保额总数（万元）',
           splitLine: {
             lineStyle: {
               type: 'solid'
@@ -257,17 +417,19 @@ export default {
         },
         series: [
           {
-            name: '2015',
-            data: data,
+            // name: '2015',
+            data: data1,
             type: 'scatter',
             symbolSize: function (data) {
-              return Math.sqrt(data[2]) / 5e2
+              // console.log(Math.sqrt(data[2]))
+              return data[2]
             },
             label: {
               emphasis: {
                 show: true,
                 color: '#000',
                 formatter: function (param) {
+                  // console.log(param)
                   return param.data[3]
                 },
                 position: 'top'
@@ -283,21 +445,21 @@ export default {
         ]
       }
       myChart.setOption(options)
-      myChart1.setOption(options)
+      // myChart1.setOption(options)
     },
     // 饼图
     getPiecharts (i, data) {
       var myChart = echarts.init(document.getElementById('pie' + i))
       var options = {
         color: data.color,
-        title: {
-          text: '23456\n总人数',
-          left: '34%',
-          top: '45%'
-        },
+        // title: {
+        //   text: '23456\n总人数',
+        //   left: '34%',
+        //   top: '45%'
+        // },
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          formatter: '{b}: {c} ({d}%)'
         },
         legend: {
           orient: 'vertical',
@@ -315,7 +477,7 @@ export default {
         },
         series: [
           {
-            name: '用户来源TOP5',
+            name: '',
             type: 'pie',
             radius: ['35%', '60%'],
             avoidLabelOverlap: false,
@@ -339,7 +501,15 @@ export default {
       myChart.setOption(options)
     },
     // 交易分析折线
-    getLinecharts () {
+    getLinecharts (data) {
+      var lengend = []
+      var symbol = ['rect', 'roundRect', 'triangle', 'triangle']
+      data.series.forEach((v, k) => {
+        lengend.push(v.name)
+        v.stack = '总量'
+        v.symbolSize = 10
+        v.symbol = symbol[k]
+      })
       var myChart = echarts.init(document.getElementById('line'))
       myChart.setOption({
         color: ['#3dbda3', '#fda70d', '#5a54c0', '#f24e6c'],
@@ -348,7 +518,7 @@ export default {
         },
         legend: {
           bottom: '9%',
-          data: ['邮件营销', '联盟广告', '视频广告', '直接访问']
+          data: lengend
         },
         grid: {
           top: '10%',
@@ -363,11 +533,13 @@ export default {
           }
         },
         xAxis: {
+          name: '日期',
           type: 'category',
           boundaryGap: false,
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: data.xData
         },
         yAxis: {
+          name: '保额总数（万元）',
           splitLine: {
             lineStyle: {
               type: 'solid'
@@ -376,45 +548,52 @@ export default {
           axisLine: { show: false },
           axisTick: { show: false }
         },
-        series: [
-          {
-            name: '邮件营销',
-            type: 'line',
-            symbol: 'rect',
-            symbolSize: 10,
-            stack: '总量',
-            data: [120, 132, 101, 134, 90, 230, 210]
-          },
-          {
-            name: '联盟广告',
-            type: 'line',
-            symbol: 'roundRect',
-            symbolSize: 10,
-            stack: '总量',
-            data: [220, 182, 191, 234, 290, 330, 310]
-          },
-          {
-            name: '视频广告',
-            type: 'line',
-            symbol: 'triangle',
-            symbolSize: 10,
-            stack: '总量',
-            data: [150, 232, 201, 154, 190, 330, 410]
-          },
-          {
-            name: '直接访问',
-            type: 'line',
-            symbol: 'triangle',
-            symbolRotate: '180',
-            symbolSize: 10,
-            stack: '总量',
-            data: [320, 332, 301, 334, 390, 330, 320]
-          }
-        ]
+        series: data.series
+        // series: [
+        //   {
+        //     name: '邮件营销',
+        //     type: 'line',
+        //     symbol: 'rect',
+        //     symbolSize: 10,
+        //     stack: '总量',
+        //     data: [120, 132, 101, 134, 90, 230, 210]
+        //   },
+        //   {
+        //     name: '联盟广告',
+        //     type: 'line',
+        //     symbol: 'roundRect',
+        //     symbolSize: 10,
+        //     stack: '总量',
+        //     data: [220, 182, 191, 234, 290, 330, 310]
+        //   },
+        //   {
+        //     name: '视频广告',
+        //     type: 'line',
+        //     symbol: 'triangle',
+        //     symbolSize: 10,
+        //     stack: '总量',
+        //     data: [150, 232, 201, 154, 190, 330, 410]
+        //   },
+        //   {
+        //     name: '直接访问',
+        //     type: 'line',
+        //     symbol: 'triangle',
+        //     symbolRotate: '180',
+        //     symbolSize: 10,
+        //     stack: '总量',
+        //     data: [320, 332, 301, 334, 390, 330, 320]
+        //   }
+        // ]
       })
     },
     // 逾期与退保率折线
-    OverLinecharts () {
+    OverLinecharts (data) {
+      var lengend = []
+      data.series.forEach((v, k) => {
+        lengend.push(v.name)
+        v.stack = '总量'
+        v.showSymbol = false
+      })
       var myChart = echarts.init(document.getElementById('overline'))
       myChart.setOption({
         color: ['#3dbda3', '#fda70d', '#5a54c0', '#f24e6c'],
@@ -423,12 +602,12 @@ export default {
         },
         legend: {
           bottom: '9%',
-          data: ['邮件营销', '联盟广告', '视频广告', '直接访问']
+          data: lengend
         },
         grid: {
           top: '10%',
           left: '3%',
-          right: '4%',
+          right: '8%',
           bottom: '18%',
           containLabel: true
         },
@@ -438,9 +617,10 @@ export default {
           }
         },
         xAxis: {
+          name: '月份',
           type: 'category',
           boundaryGap: false,
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: data.xData
         },
         yAxis: {
           name: '概率100%',
@@ -452,26 +632,11 @@ export default {
           axisLine: { show: false },
           axisTick: { show: false }
         },
-        series: [
-          {
-            name: '邮件营销',
-            type: 'line',
-            showSymbol: false,
-            stack: '总量',
-            data: [120, 132, 101, 134, 90, 230, 210]
-          },
-          {
-            name: '联盟广告',
-            type: 'line',
-            showSymbol: false,
-            stack: '总量',
-            data: [220, 182, 191, 234, 290, 330, 310]
-          }
-        ]
+        series: data.series
       })
     },
     // 车型柱状图
-    BarCarCharts () {
+    BarCarCharts (data) {
       var myChart = echarts.init(document.getElementById('bar'))
       myChart.setOption({
         color: ['#FCB738'],
@@ -482,10 +647,11 @@ export default {
           bottom: '10%'
         },
         xAxis: {
+          name: '车龄',
           type: 'category',
           axisLine: { show: false },
           axisTick: { show: false },
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          data: data.xData
         },
         yAxis: {
           name: '数量',
@@ -499,13 +665,17 @@ export default {
         },
         series: [{
           barWidth: 50,
-          data: [120, 200, 150, 80, 70, 110, 130],
+          data: data.series,
           type: 'bar'
         }]
       })
     },
     // 年龄柱状图
-    BarFullCarCharts () {
+    BarFullCarCharts (data) {
+      var dataShadow = []
+      for (var i = 0; i < data.series.length; i++) {
+        dataShadow.push(100)
+      }
       var myChart = echarts.init(document.getElementById('bar_line'))
       myChart.setOption({
         color: ['#4AA8F6 '],
@@ -516,13 +686,14 @@ export default {
           bottom: '10%'
         },
         xAxis: {
+          name: '年龄',
           type: 'category',
           axisLine: { show: false },
           axisTick: { show: false },
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          data: data.xData
         },
         yAxis: {
-          name: '数量',
+          name: '占比',
           splitLine: {
             lineStyle: {
               type: 'solid'
@@ -540,13 +711,13 @@ export default {
             },
             barGap: '-100%',
             barCategoryGap: '40%',
-            data: [300, 300, 300, 300, 300, 300, 300],
+            data: dataShadow,
             animation: false
           },
           {
             // barGap: '-100%',
             barWidth: 50,
-            data: [120, 200, 150, 80, 70, 110, 130],
+            data: data.series,
             type: 'bar',
             label: {
               show: true,
@@ -558,7 +729,8 @@ export default {
     }
   },
   components: {
-    ChartHeader
+    ChartHeader,
+    Curve
   }
 }
 </script>

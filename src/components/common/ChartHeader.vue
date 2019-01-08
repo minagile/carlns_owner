@@ -2,7 +2,9 @@
   <div class="chart_header">
     <span>{{ title }}</span>
     <div class="timechoose">
-      <el-select v-model="value" placeholder="请选择时间段">
+      <el-select v-model="value"
+      @change="changetime"
+      placeholder="请选择时间段">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -10,20 +12,13 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <!-- <el-date-picker
-        v-model="value7"
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="—"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="pickerOptions2">
-      </el-date-picker> -->
       <el-date-picker
         v-model="value7"
         type="datetimerange"
         range-separator="—"
+        @change="dateTimeChange"
+        format="yyyy-MM-dd"
+        value-format="yyyy-MM-dd"
         start-placeholder="开始日期"
         end-placeholder="结束日期">
       </el-date-picker>
@@ -37,36 +32,7 @@ export default {
   data () {
     return {
       value7: '',
-      time: '近一周',
-      pickerOptions2: {
-        shortcuts: [{
-          text: '近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        },
-        {
-          text: '近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        },
-        {
-          text: '近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
+      // time: '近一周',
       options: [
         {
           label: '当天',
@@ -92,10 +58,26 @@ export default {
       value: ''
     }
   },
+  methods: {
+    changetime (data) {
+      this.value7 = ''
+      // console.log(data)
+      this.$emit('dateChage', [data, this.num])
+    },
+    dateTimeChange (data) {
+      this.value = ''
+      // console.log(data)
+      this.$emit('timeChage', [data, this.num])
+    }
+  },
   props: {
     title: {
       type: String,
       default: ''
+    },
+    num: {
+      type: Number,
+      default: 0
     }
   }
 }
