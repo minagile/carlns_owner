@@ -177,6 +177,7 @@ export default {
       this.dialogVisible = true
       if (msg === '新增模板') {
         this.form = {}
+        this.disabled = false
       } else {
         this.disabled = true
         this.id = id
