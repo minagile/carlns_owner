@@ -96,6 +96,7 @@
         </div>
       </el-col>
     </el-row>
+    <!-- <div id="qwe" style="width:100%;height: 400px;"></div> -->
   </div>
 </template>
 
@@ -103,6 +104,8 @@
 import ChartHeader from '../common/ChartHeader'
 import Curve from './charts/Curve'
 var echarts = require('echarts/lib/echarts')
+require('echarts/map/js/china')
+require('echarts/map/js/world')
 // 引入柱状图
 require('echarts/lib/chart/bar')
 require('echarts/lib/chart/pie')
@@ -130,8 +133,140 @@ export default {
       this.getKPIData(v)
     })
     // this.getKPIData('areaCount')
+    // this.map()
   },
   methods: {
+    map (i) {
+      var myChart = echarts.init(document.getElementById('scatter1'))
+      var geoCoordMap = {
+        '上海': [121.472644, 31.231706],
+        '云南': [102.712251, 24.040609],
+        '内蒙古': [111.670801, 40.818311],
+        '北京': [116.405285, 39.904989],
+        '台湾': [121.509062, 25.044332],
+        '吉林': [125.3245, 43.886841],
+        '四川': [103.065735, 30.659462],
+        '天津': [119.190182, 39.125596],
+        '宁夏': [106.278179, 38.46637],
+        '安徽': [117.283042, 31.86119],
+        '山东': [118.000923, 36.675807],
+        '山西': [112.049248, 37.057014],
+        '广东': [113.280637, 23.125178],
+        '广西': [108.320004, 22.82402],
+        '新疆': [87.617733, 43.792818],
+        '江苏': [119.467413, 33.741544],
+        '江西': [115.892151, 28.676493],
+        '河北': [114.802461, 37.745474],
+        '河南': [113.665412, 33.757975],
+        '浙江': [120.153576, 29.287459],
+        '海南': [110.33119, 20.031971],
+        '湖北': [113.298572, 30.984355],
+        '湖南': [112.12279, 28.19409],
+        '澳门': [113.54909, 22.198951],
+        '甘肃': [103.823557, 36.058039],
+        '福建': [119.306239, 26.075302],
+        '西藏': [91.132212, 29.660361],
+        '贵州': [106.713478, 26.578343],
+        '辽宁': [123.029096, 41.396767],
+        '重庆': [106.504962, 29.933155],
+        '陕西': [108.948024, 34.263161],
+        '青海': [100.578916, 36.623178],
+        '香港': [114.173355, 22.320048],
+        '黑龙江': [126.642464, 46.756967]
+      }
+
+      var convertData = function (data) {
+        var res = []
+        for (var i = 0; i < data.length; i++) {
+          var geoCoord = []
+          // console.log(data)
+          if (data[i].address.indexOf('省') === -1) {
+            geoCoord = geoCoordMap[data[i].address]
+            if (geoCoord) {
+              res.push({
+                name: data[i].address,
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+              })
+            }
+          } else {
+            geoCoord = geoCoordMap[data[i].address.split('省')[0]]
+            if (geoCoord) {
+              res.push({
+                name: data[i].address.split('省')[0],
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+              })
+            }
+          }
+        }
+        return res
+      }
+      var convertedData = convertData(i)
+      // console.log(convertedData)
+
+      var option = {
+        backgroundColor: '#404a59',
+        tooltip: {
+          trigger: 'item',
+          formatter: function (val) {
+            // console.log(val)
+            return '地区：' + val.data.name + '<br />人均投保次数: ' + val.data.value[2] + '<br />人均投保额: ' + val.data.value[3] + '<br />人数: ' + val.data.value[4]
+          }
+        },
+        geo: { // 这个是重点配置区
+          map: 'china', // 表示中国地图
+          roam: true,
+          label: {
+            normal: {
+              show: false, // 是否显示对应地名
+              textStyle: {
+                color: 'rgba(0,0,0,0.4)'
+              }
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          itemStyle: {
+            normal: {
+              areaColor: '#323c48',
+              borderColor: '#111'
+            },
+            emphasis: {
+              areaColor: '#2a333d'
+            }
+          }
+        },
+        series: [
+          {
+            // name: 'pm2.5',
+            type: 'scatter',
+            coordinateSystem: 'geo',
+            data: convertedData,
+            symbolSize: function (val) {
+              return Math.max(val[2] / 10, 8)
+            },
+            label: {
+              normal: {
+                formatter: '{b}',
+                position: 'right',
+                show: true
+              },
+              emphasis: {
+                show: true
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: '#ddb926',
+                position: 'right',
+                show: true
+              }
+            }
+          }
+        ]
+      }
+      myChart.setOption(option)
+    },
     // 用户分析
     getScatterCharts1 (data) {
       // console.log(data)
@@ -261,7 +396,8 @@ export default {
           // 用户分析
           if (data === 'areaCount') {
             // console.log(res)
-            this.getScatterCharts1(res.data)
+            // this.getScatterCharts1(res.data)
+            this.map(res.data)
           }
           // 性别
           if (data === 'gender') {
@@ -273,7 +409,7 @@ export default {
               color: ['#35A3FF', '#FFCBDB'],
               legend: arr,
               data: res.data
-            })
+            }, '性别')
           }
           // 来源分析
           if (data === 'streamAnalysis') {
@@ -290,7 +426,7 @@ export default {
               color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
               legend: arr2,
               data: res.data
-            })
+            }, '来源')
           }
           // 车型
           if (data === 'carAge') {
@@ -308,7 +444,7 @@ export default {
               color: ['#04AAFE', '#0593FF', '#6BC4FF'],
               legend: arrr,
               data: res.data
-            })
+            }, '模式')
           }
           // 年龄
           if (data === 'ageCount') {
@@ -326,8 +462,13 @@ export default {
               color: ['#4AA8F6', '#3DBDA2', '#FCB738'],
               legend: arr5,
               data: res.data
-            })
+            }, '期数')
           }
+        } else {
+          this.$notify({
+            type: 'info',
+            title: res.msg
+          })
         }
       })
     },
@@ -448,7 +589,7 @@ export default {
       // myChart1.setOption(options)
     },
     // 饼图
-    getPiecharts (i, data) {
+    getPiecharts (i, data, text) {
       var myChart = echarts.init(document.getElementById('pie' + i))
       var options = {
         color: data.color,
@@ -458,8 +599,9 @@ export default {
         //   top: '45%'
         // },
         tooltip: {
-          trigger: 'item',
-          formatter: '{b}: {c} ({d}%)'
+          show: false
+          // trigger: 'item',
+          // formatter: '{b}: {c}'
         },
         legend: {
           orient: 'vertical',
@@ -485,13 +627,13 @@ export default {
             label: {
               normal: {
                 show: true,
-                position: 'inside',
-                formatter: '{d}%'
+                // position: 'inside',
+                formatter: text + ': {b} \n数量: {c}'
               }
             },
             labelLine: {
               normal: {
-                show: false
+                show: true
               }
             },
             data: data.data
@@ -506,7 +648,7 @@ export default {
       var symbol = ['rect', 'roundRect', 'triangle', 'triangle']
       data.series.forEach((v, k) => {
         lengend.push(v.name)
-        v.stack = '总量'
+        // v.stack = '总量'
         v.symbolSize = 10
         v.symbol = symbol[k]
       })
@@ -591,7 +733,7 @@ export default {
       var lengend = []
       data.series.forEach((v, k) => {
         lengend.push(v.name)
-        v.stack = '总量'
+        // v.stack = '总量'
         v.showSymbol = false
       })
       var myChart = echarts.init(document.getElementById('overline'))
