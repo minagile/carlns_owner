@@ -91,6 +91,22 @@
           </tr>
         </table>
       </div>
+      <p class="title" v-show="logsAdsList.length > 0">
+        <img src="../../../assets/img/aaa.png" alt="">
+        操作日志
+      </p>
+      <div class="basic" v-show="logsAdsList.length > 0">
+        <table class="border">
+          <tr>
+            <th width="150">操作时间</th>
+            <th>操作项</th>
+          </tr>
+          <tr v-for="item in logsAdsList" :key="item.name">
+            <td width="150">{{ item.logTime | timeChange }}</td>
+            <td>{{ item.logText }}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -124,7 +140,8 @@ export default {
         amount: 0,
         head: []
       },
-      stages: []
+      stages: [],
+      logsAdsList: []
     }
   },
   mounted () {
@@ -140,6 +157,7 @@ export default {
           this.basicMsg = res.data
           this.tableData = res.data.listShow
           this.stages = res.data.stages
+          this.logsAdsList = res.data.logsAdsList
         }
       })
     }

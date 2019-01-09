@@ -6,12 +6,12 @@ import { Notification } from 'element-ui'
 axios.defaults.timeout = 10000
 // axios.defaults.baseURL = 'http://192.168.1.128:8848' // 彭
 // axios.defaults.baseURL = 'http://192.168.1.145:80'
-// axios.defaults.baseURL = 'http://192.168.1.140:80'
+axios.defaults.baseURL = 'http://192.168.1.140:8080'
 // axios.defaults.baseURL = 'http://192.168.1.102:8848'
-axios.defaults.baseURL = 'http://192.168.1.145:8080'
+// axios.defaults.baseURL = 'http://192.168.1.145:8080'
 // axios.defaults.baseURL = 'http://192.168.1.128:8080'
-// axios.defaults.baseURL = 'http://192.168.1.117:8080'
-// axios.defaults.baseURL = 'http://192.168.1.136:80'
+// axios.defaults.baseURL = 'http://192.168.1.128:8080'
+// axios.defaults.baseURL = 'http://192.168.1.136:8080'
 // axios.defaults.baseURL = 'http://www.easyfq.com'
 
 // http request 拦截器

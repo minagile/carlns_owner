@@ -55,7 +55,7 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'来源分析'" :num="4" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'渠道来源分析'" :num="4" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="scatter" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -70,13 +70,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'车型'" :num="6" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'车龄'" :num="6" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'模式'" :num="7" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'投保方案'" :num="7" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie2" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -85,7 +85,7 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'年龄'" :num="8" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'年龄区间分析'" :num="8" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar_line" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -132,8 +132,6 @@ export default {
     this.list.forEach(v => {
       this.getKPIData(v)
     })
-    // this.getKPIData('areaCount')
-    // this.map()
   },
   methods: {
     map (i) {
@@ -185,7 +183,7 @@ export default {
             if (geoCoord) {
               res.push({
                 name: data[i].address,
-                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount, data[i].percent, data[i].amount])
               })
             }
           } else {
@@ -193,7 +191,7 @@ export default {
             if (geoCoord) {
               res.push({
                 name: data[i].address.split('省')[0],
-                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount, data[i].percent, data[i].amount])
               })
             }
           }
@@ -204,12 +202,16 @@ export default {
       // console.log(convertedData)
 
       var option = {
-        backgroundColor: '#404a59',
+        title: {
+          text: '各个地区所占人数',
+          left: '40%'
+        },
+        // backgroundColor: '#404a59',
         tooltip: {
           trigger: 'item',
           formatter: function (val) {
             // console.log(val)
-            return '地区：' + val.data.name + '<br />人均投保次数: ' + val.data.value[2] + '<br />人均投保额: ' + val.data.value[3] + '<br />人数: ' + val.data.value[4]
+            return '地区：' + val.data.name + '<br />人数: ' + val.data.value[4] + '<br />区域占比: ' + val.data.value[5] + '<br />区域投保总额: ' + val.data.value[6]
           }
         },
         geo: { // 这个是重点配置区
@@ -223,16 +225,16 @@ export default {
               }
             },
             emphasis: {
-              show: false
+              show: true
             }
           },
           itemStyle: {
             normal: {
-              areaColor: '#323c48',
-              borderColor: '#111'
+              areaColor: '#c9e1f8',
+              borderColor: '#a2caf2'
             },
             emphasis: {
-              areaColor: '#2a333d'
+              areaColor: '#35A3FF30'
             }
           }
         },
@@ -240,10 +242,11 @@ export default {
           {
             // name: 'pm2.5',
             type: 'scatter',
+            // symbol: 'pin',
             coordinateSystem: 'geo',
             data: convertedData,
             symbolSize: function (val) {
-              return Math.max(val[2] / 10, 8)
+              return Math.max(val[2], 5)
             },
             label: {
               normal: {
@@ -257,7 +260,43 @@ export default {
             },
             itemStyle: {
               normal: {
-                color: '#ddb926',
+                // color: function (params) {
+                //   var colorList = [
+                //     '#FF7700', '#35A3FF', '#FFCBDB', '#FFC552', '#FFE414', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD', '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+                //   ]
+                //   return colorList[params.dataIndex]
+                // },
+                color: 'blue',
+                position: 'right',
+                show: true
+              }
+            }
+          },
+          {
+            // name: 'pm2.5',
+            type: 'scatter',
+            symbol: 'pin',
+            coordinateSystem: 'geo',
+            data: convertedData,
+            symbolSize: 30,
+            label: {
+              normal: {
+                formatter: function (val) {
+                  return val.data.value[4]
+                },
+                show: true,
+                textStyle: {
+                  color: '#fff',
+                  fontSize: 9
+                }
+              },
+              emphasis: {
+                show: true
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: 'red',
                 position: 'right',
                 show: true
               }
@@ -423,7 +462,7 @@ export default {
               arr2.push(v.name)
             })
             this.getPiecharts1(0, {
-              color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
+              color: ['#FF7700', '#FFE414', '#FFB10A', '#FF9705', '#FFC552'],
               legend: arr2,
               data: res.data
             }, '来源')
@@ -625,17 +664,17 @@ export default {
             center: ['40%', '50%'],
             label: {
               normal: {
-                show: true,
+                show: false
                 // position: 'inside',
                 // formatter: text + ': {b}\n\n数量: {c}'
-                formatter: function (val) {
-                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
-                }
+                // formatter: function (val) {
+                //   return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                // }
               }
             },
             labelLine: {
               normal: {
-                show: true,
+                show: false,
                 length: 30
               }
             },
@@ -685,9 +724,10 @@ export default {
               normal: {
                 show: true,
                 // position: 'inside',
-                formatter: function (val) {
-                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
-                }
+                formatter: text + ': {b}\n\n数量: {c}'
+                // formatter: function (val) {
+                //   return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                // }
               }
             },
             labelLine: {
