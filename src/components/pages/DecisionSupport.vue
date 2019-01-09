@@ -200,6 +200,28 @@ export default {
       }
       var convertedData = convertData(i)
       // console.log(convertedData)
+      var y = []
+      var data = []
+      var x = []
+      i.forEach((v, k) => {
+        data.push({name: v.address, value: v.percent})
+      })
+      data.forEach((v, k) => {
+        for (var j = 0; j < data.length - 1 - k; j++) {
+          if (data[j].value > data[j + 1].value) {
+            var temp = data[j + 1]
+            data[j + 1] = data[j]
+            data[j] = temp
+          }
+        }
+      })
+      data.forEach(v => {
+        y.push(v.name)
+        x.push(v.value)
+      })
+      // console.log(data)
+      // console.log(x)
+      // console.log(data)
 
       var option = {
         title: {
@@ -214,9 +236,63 @@ export default {
             return '地区：' + val.data.name + '<br />人数: ' + val.data.value[4] + '<br />区域占比: ' + val.data.value[5] + '<br />区域投保总额: ' + val.data.value[6]
           }
         },
+        grid: {
+          right: 40,
+          top: 50,
+          bottom: 40,
+          width: '20%'
+        },
+        xAxis: {
+          type: 'value',
+          scale: true,
+          position: 'top',
+          boundaryGap: false,
+          splitLine: {
+            show: false
+          },
+          // data: x,
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            margin: 2,
+            textStyle: {
+              color: '#a2caf2'
+            }
+          }
+        },
+        yAxis: {
+          type: 'category',
+          //  name: 'TOP 20',
+          nameGap: 16,
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: '#a2caf2'
+            }
+          },
+          axisTick: {
+            show: false,
+            lineStyle: {
+              color: '#a2caf2'
+            }
+          },
+          axisLabel: {
+            interval: 0,
+            textStyle: {
+              color: '#a2caf2'
+            }
+          },
+          data: y
+        },
         geo: { // 这个是重点配置区
           map: 'china', // 表示中国地图
           roam: true,
+          left: '10',
+          right: '35%',
           label: {
             normal: {
               show: false, // 是否显示对应地名
@@ -301,9 +377,22 @@ export default {
                 show: true
               }
             }
+          },
+          {
+            id: 'bar',
+            zlevel: 2,
+            type: 'bar',
+            symbol: 'none',
+            itemStyle: {
+              normal: {
+                color: '#FF770030'
+              }
+            },
+            data: data
           }
         ]
       }
+      // console.log(data)
       myChart.setOption(option)
     },
     // 用户分析
