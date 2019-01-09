@@ -235,7 +235,6 @@ export default {
     // 打开弹窗
     openDia (msg, id) {
       this.title = msg
-      this.dialogVisible = true
       this.checked = false
       this.disabled = false
       this.multipleSelection = []
@@ -246,12 +245,14 @@ export default {
         v.money = ''
       })
       if (msg === '新增模板') {
+        this.dialogVisible = true
         this.form = {}
       } else {
         this.$post('/admin/billNote/findById', {
           id: id
         }).then(res => {
           if (res.code === 0) {
+            this.dialogVisible = true
             this.titleName = res.data.templateName
             res.data.arr.forEach(v => {
               this.tableData1.forEach(o => {

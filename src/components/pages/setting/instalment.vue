@@ -174,8 +174,8 @@ export default {
     },
     openDia (msg, id) {
       this.title = msg
-      this.dialogVisible = true
       if (msg === '新增模板') {
+        this.dialogVisible = true
         this.form = {}
         this.disabled = false
       } else {
@@ -185,7 +185,7 @@ export default {
           id: id
         }).then(res => {
           if (res.code === 0) {
-            // this.$notify.success(res.msg)
+            this.dialogVisible = true
             this.form = res.data
           } else if (res.code === 1) {
             this.$notify.error(res.msg)
@@ -298,13 +298,13 @@ export default {
     openMuban (id, name) {
       this.name = name
       this.multipleSelection = []
-      this.show = true
       this.id = id
       this.$post('/admin/rate/findChannel', {
         rateId: id
       }).then(res => {
         // console.log(res)
         if (res.code === 0) {
+          this.show = true
           this.tableData1 = res.data
           res.data.forEach(v => {
             if (v.checkbox === true) {
