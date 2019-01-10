@@ -68,6 +68,22 @@
         <td class="all">合计：{{tableData.amount}}</td>
       </tr>
     </table>
+    <p class="title" v-show="logsAdsList.length > 0">
+      <img src="../../../assets/img/aaa.png" alt="">
+      操作日志
+    </p>
+    <div class="basic" v-show="logsAdsList.length > 0">
+      <table class="border">
+        <tr>
+          <th width="150">操作时间</th>
+          <th>操作项</th>
+        </tr>
+        <tr v-for="item in logsAdsList" :key="item.name">
+          <td width="150">{{ item.logTime | timeChange }}</td>
+          <td>{{ item.logText }}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -99,7 +115,8 @@ export default {
       tableData: {
         amount: 0,
         head: []
-      }
+      },
+      logsAdsList: []
     }
   },
   mounted () {
@@ -113,10 +130,21 @@ export default {
         if (res.code === 0) {
           this.basicMsg = res.data
           this.tableData = res.data.listShow
+          this.logsAdsList = res.data.logsAdsList
         }
       })
     }
+  },
+  filters: {
+    timeChange (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
+    }
   }
+}
+function zero (data) {
+  if (data < 10) return '0' + data
+  return data
 }
 </script>
 
@@ -125,6 +153,19 @@ export default {
   height: 100%;
   min-height: 744px;
   box-sizing: border-box;
+  .title {
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    font-weight:Regular;
+    color:rgba(51,51,51,1);
+    line-height:24px;
+    margin-left: 100px;
+    margin-top: 29px;
+    img {
+      vertical-align: middle;
+      margin: -2px 5px 0 0;
+    }
+  }
   .el-breadcrumb {
     margin: 23px 20px;
   }

@@ -231,3 +231,14 @@ button {
   top: 18px;
   right: 0px;
 }
+
+.DecisionSupport .el-table th {
+  padding: 0 !important;
+}
+.DecisionSupport .el-table tr {
+  height: 30px;
+}
+.DecisionSupport .el-table td {
+  height: 28px;
+  padding: 0;
+}

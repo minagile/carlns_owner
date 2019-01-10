@@ -41,7 +41,25 @@
       <el-col :span="16">
         <div class="grid-content">
           <ChartHeader :title="'用户分析'" :num="10" @dateChage="dateChage" @timeChage="timeChage"/>
-          <div id="scatter1" style="width: 100%;height:448px;"></div>
+          <div id="scatter1" style="width: 60%;height:440px;"></div>
+          <div class="table">
+            <div class="table_a">
+              <div id="charts" style="width: 100%;height:100%;"></div>
+            </div>
+            <div class="table_a">
+              <p>数据展示</p>
+              <el-table :data="tableData" :stripe="true" max-height="185" style="width: 100%">
+                <el-table-column prop="address" label="地区" align="center"></el-table-column>
+                <el-table-column prop="headCount" label="人数" align="center"></el-table-column>
+                <el-table-column prop="amountAvg" label="金额" align="center"></el-table-column>
+                <el-table-column label="区域占比" align="center">
+                  <template slot-scope="scope">
+                    {{ scope.row.percent.toFixed(2) }}
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
         </div>
       </el-col>
       <el-col :span="7">
@@ -55,7 +73,7 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'来源分析'" :num="4" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'渠道来源分析'" :num="4" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="scatter" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -70,13 +88,13 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'车型'" :num="6" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'车龄'" :num="6" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
       <el-col :span="7">
         <div class="grid-content">
-          <ChartHeader :title="'模式'" :num="7" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'投保方案'" :num="7" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="pie2" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -85,7 +103,7 @@
     <el-row type="flex" class="row-bg center" justify="space-around">
       <el-col :span="16">
         <div class="grid-content">
-          <ChartHeader :title="'年龄'" :num="8" @dateChage="dateChage" @timeChage="timeChage"/>
+          <ChartHeader :title="'年龄区间分析'" :num="8" @dateChage="dateChage" @timeChage="timeChage"/>
           <div id="bar_line" style="width: 100%;height:448px;"></div>
         </div>
       </el-col>
@@ -120,6 +138,7 @@ export default {
   name: 'DecisionSupport',
   data () {
     return {
+      tableData: [],
       KPIlist: [{}, {}, {}, {}],
       time: '5',
       startTime: '',
@@ -132,10 +151,53 @@ export default {
     this.list.forEach(v => {
       this.getKPIData(v)
     })
-    // this.getKPIData('areaCount')
-    // this.map()
+    // this.Barcharts()
   },
   methods: {
+    Barcharts (data) {
+      // console.log(data)
+      var myChart = echarts.init(document.getElementById('charts'))
+      myChart.setOption({
+        color: function (params) {
+          var colorList = [
+            '#3eabe2', '#3ccbdf', '#55cfa1', '#f0d836', '#d1ebfa', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD', '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+          ]
+          return colorList[params.dataIndex]
+        },
+        title: {
+          text: '区域占比'
+        },
+        grid: {
+          left: '10%',
+          top: '15%',
+          right: '10%',
+          bottom: '10%'
+        },
+        xAxis: {
+          show: true,
+          // boundaryGap: false,
+          type: 'category',
+          axisLine: { show: false },
+          axisTick: { show: false }
+          // min: 'dateMin'
+          // data: ['0', '1', '2', '3', '4', '5', '6']
+        },
+        yAxis: {
+          show: true,
+          type: 'value',
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        series: [{
+          data: data,
+          type: 'bar',
+          barWidth: 20,
+          itemStyle: {
+            barBorderRadius: 3
+          }
+        }]
+      })
+    },
     map (i) {
       var myChart = echarts.init(document.getElementById('scatter1'))
       var geoCoordMap = {
@@ -185,7 +247,7 @@ export default {
             if (geoCoord) {
               res.push({
                 name: data[i].address,
-                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount, data[i].percent, data[i].amount])
               })
             }
           } else {
@@ -193,7 +255,7 @@ export default {
             if (geoCoord) {
               res.push({
                 name: data[i].address.split('省')[0],
-                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount])
+                value: geoCoord.concat([data[i].hitAvg, data[i].amountAvg, data[i].headCount, data[i].percent, data[i].amount])
               })
             }
           }
@@ -201,20 +263,50 @@ export default {
         return res
       }
       var convertedData = convertData(i)
-      // console.log(convertedData)
+      console.log(convertedData)
+      // var y = []
+      var data = []
+      // var x = []
+      i.forEach((v, k) => {
+        data.push([v.address, v.percent])
+      })
+      // data.forEach((v, k) => {
+      //   for (var j = 0; j < data.length - 1 - k; j++) {
+      //     if (data[j].value > data[j + 1].value) {
+      //       var temp = data[j + 1]
+      //       data[j + 1] = data[j]
+      //       data[j] = temp
+      //     }
+      //   }
+      // })
+      // data.forEach(v => {
+      //   y.push(v.name)
+      //   x.push(v.value)
+      // })
+      this.Barcharts(data)
+      // console.log(data)
+      // console.log(x)
+      // console.log(data)
 
       var option = {
-        backgroundColor: '#404a59',
+        title: {
+          text: '各个地区所占人数',
+          left: '40%'
+        },
+        // backgroundColor: '#404a59',
         tooltip: {
           trigger: 'item',
           formatter: function (val) {
             // console.log(val)
-            return '地区：' + val.data.name + '<br />人均投保次数: ' + val.data.value[2] + '<br />人均投保额: ' + val.data.value[3] + '<br />人数: ' + val.data.value[4]
+            return '地区：' + val.data.name + '<br />人数: ' + val.data.value[4] + '<br />区域占比: ' + val.data.value[5] + '<br />区域投保总额: ' + val.data.value[6]
           }
         },
         geo: { // 这个是重点配置区
           map: 'china', // 表示中国地图
           roam: true,
+          left: '-300',
+          right: '-100',
+          // center: [117.98, 31.20],
           label: {
             normal: {
               show: false, // 是否显示对应地名
@@ -223,16 +315,16 @@ export default {
               }
             },
             emphasis: {
-              show: false
+              show: true
             }
           },
           itemStyle: {
             normal: {
-              areaColor: '#323c48',
-              borderColor: '#111'
+              areaColor: '#c9e1f8',
+              borderColor: '#a2caf2'
             },
             emphasis: {
-              areaColor: '#2a333d'
+              areaColor: '#35A3FF30'
             }
           }
         },
@@ -240,11 +332,13 @@ export default {
           {
             // name: 'pm2.5',
             type: 'scatter',
+            // symbol: 'pin',
             coordinateSystem: 'geo',
             data: convertedData,
-            symbolSize: function (val) {
-              return Math.max(val[2] / 10, 8)
-            },
+            mbolSize: 5,
+            // symolSize: function (val) {
+            //   rebturn Math.max(val[2], 5)
+            // },
             label: {
               normal: {
                 formatter: '{b}',
@@ -257,14 +351,64 @@ export default {
             },
             itemStyle: {
               normal: {
-                color: '#ddb926',
+                // color: function (params) {
+                //   var colorList = [
+                //     '#FF7700', '#35A3FF', '#FFCBDB', '#FFC552', '#FFE414', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD', '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+                //   ]
+                //   return colorList[params.dataIndex]
+                // },
+                color: 'blue',
+                position: 'right',
+                show: true
+              }
+            }
+          },
+          {
+            // name: 'pm2.5',
+            type: 'scatter',
+            symbol: 'pin',
+            coordinateSystem: 'geo',
+            data: convertedData,
+            symbolSize: 30,
+            label: {
+              normal: {
+                formatter: function (val) {
+                  console.log(val)
+                  return val.data.value[4]
+                },
+                show: true,
+                textStyle: {
+                  color: '#fff',
+                  fontSize: 9
+                }
+              },
+              emphasis: {
+                show: true
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: 'red',
                 position: 'right',
                 show: true
               }
             }
           }
+          // {
+          //   id: 'bar',
+          //   zlevel: 2,
+          //   type: 'bar',
+          //   symbol: 'none',
+          //   itemStyle: {
+          //     normal: {
+          //       color: '#FF770030'
+          //     }
+          //   },
+          //   data: data
+          // }
         ]
       }
+      // console.log(data)
       myChart.setOption(option)
     },
     // 用户分析
@@ -397,6 +541,7 @@ export default {
           if (data === 'areaCount') {
             // console.log(res)
             // this.getScatterCharts1(res.data)
+            this.tableData = res.data
             this.map(res.data)
           }
           // 性别
@@ -423,7 +568,7 @@ export default {
               arr2.push(v.name)
             })
             this.getPiecharts1(0, {
-              color: ['#FF7700', '#FF9705', '#FFB10A', '#FFC552', '#FFE414'],
+              color: ['#FF7700', '#FFE414', '#FFB10A', '#FF9705', '#FFC552'],
               legend: arr2,
               data: res.data
             }, '来源')
@@ -625,17 +770,17 @@ export default {
             center: ['40%', '50%'],
             label: {
               normal: {
-                show: true,
+                show: false
                 // position: 'inside',
                 // formatter: text + ': {b}\n\n数量: {c}'
-                formatter: function (val) {
-                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
-                }
+                // formatter: function (val) {
+                //   return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                // }
               }
             },
             labelLine: {
               normal: {
-                show: true,
+                show: false,
                 length: 30
               }
             },
@@ -685,9 +830,10 @@ export default {
               normal: {
                 show: true,
                 // position: 'inside',
-                formatter: function (val) {
-                  return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
-                }
+                formatter: text + ': {b}\n\n数量: {c}'
+                // formatter: function (val) {
+                //   return '排名：' + val.data.name.split(' ')[0] + '\n' + text + ': ' + val.data.name.split(' ')[1] + '\n数量: ' + val.data.value
+                // }
               }
             },
             labelLine: {
@@ -933,7 +1079,8 @@ export default {
   components: {
     ChartHeader,
     Curve
-  }
+  },
+  filter: {}
 }
 </script>
 
@@ -991,5 +1138,32 @@ export default {
       height: 100%;
     }
   }
+  #scatter1 {
+    float: left;
+  }
+  .table {
+    float: left;
+    width: 40%;
+    height: 440px;
+    .table_a {
+      // background: #F4F8F9;
+      height: 210px;
+      box-sizing: border-box;
+      border: 1px solid #f9f9fc;
+      margin: 5px;
+      p {
+        background: #d1ebfa;
+        color: #378bca;
+        line-height: 30px;
+        text-indent: 5px;
+      }
+    }
+  }
+}
+.el-table td, .el-table th {
+  padding: 0 !important;
+}
+.el-table td, .el-table th.is-leaf {
+  // height: 20px;
 }
 </style>
