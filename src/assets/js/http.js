@@ -8,10 +8,10 @@ axios.defaults.timeout = 10000
 // axios.defaults.baseURL = 'http://192.168.1.145:80'
 // axios.defaults.baseURL = 'http://192.168.1.140:80'
 // axios.defaults.baseURL = 'http://192.168.1.102:8848'
-axios.defaults.baseURL = 'http://192.168.1.145:8080'
+// axios.defaults.baseURL = 'http://192.168.1.145:8080'
 // axios.defaults.baseURL = 'http://192.168.1.128:8080'
 // axios.defaults.baseURL = 'http://192.168.1.117:8080'
-// axios.defaults.baseURL = 'http://192.168.1.136:80'
+axios.defaults.baseURL = 'http://192.168.1.136:8080'
 // axios.defaults.baseURL = 'http://www.easyfq.com'
 
 // http request 拦截器
@@ -53,11 +53,12 @@ axios.interceptors.response.use(
       })
     }
     if (response.data.code === 607) {
-      Notification({
-        message: '您的账号在另一设备上登录',
-        title: '重新登录',
-        type: 'info'
-      })
+      // Notification({
+      //   message: '您的账号在另一设备上登录',
+      //   title: '重新登录',
+      //   type: 'info'
+      // })
+      showTips('您的账号在另一设备上登录', '重新登录', 'info')
       router.push({
         path: '/',
         querry: { redirect: router.currentRoute.fullPath }
@@ -196,3 +197,15 @@ export const Req = axios.defaults.baseURL
 //     })
 //   })
 // }
+let timer = null
+export function showTips (msg, title, type) {
+  clearTimeout(timer)
+  timer = setTimeout(() => {
+    Notification({
+      message: msg,
+      title: title,
+      // message: response.data.msg,
+      type: type
+    })
+  }, 30)
+}

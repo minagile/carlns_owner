@@ -465,10 +465,10 @@ export default {
             }, '期数')
           }
         } else {
-          this.$notify({
-            type: 'info',
-            title: res.msg
-          })
+          // this.$notify({
+          //   type: 'info',
+          //   title: res.msg
+          // })
         }
       })
     },

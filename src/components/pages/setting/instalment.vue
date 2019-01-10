@@ -15,15 +15,39 @@
         height="580">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="templateName" label="模板名称"></el-table-column>
-        <el-table-column prop="stages" label="期数"></el-table-column>
-        <el-table-column prop="downPayment" label="首付款"></el-table-column>
-        <el-table-column prop="platform" label="服务费"></el-table-column>
-        <el-table-column prop="firstRate" label="利率" min-width="100"></el-table-column>
+        <el-table-column label="期数">
+          <template slot-scope="scope">
+            <p v-for="item in scope.row.msg" :key="item.msg">
+              {{item.stages}}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column label="首付款">
+          <template slot-scope="scope">
+            <p v-for="item in scope.row.msg" :key="item.msg">
+              {{item.downPayment}}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column label="服务费">
+          <template slot-scope="scope">
+            <p v-for="item in scope.row.msg" :key="item.msg">
+              {{item.platform}}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column label="利率" min-width="100">
+          <template slot-scope="scope">
+            <p v-for="item in scope.row.msg" :key="item.msg">
+              {{item.firstRate}}
+            </p>
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" style="color: #5962FF;" @click="openMuban(scope.row.rateId, scope.row.templateName)">分配模板</el-button>
-            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.rateId)">编辑</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openMuban(scope.row.templateName, scope.row.templateName)">分配模板</el-button>
+            <el-button type="text" style="color: #5962FF;" @click="openDia('编辑模板', scope.row.templateName)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,32 +68,55 @@
 
     <el-dialog
       :visible.sync="dialogVisible"
-      width="683px">
+      width="790px">
       <div class="dialog-header">{{title}}</div>
       <div class="form">
-        <el-form ref="form" :model="form" label-width="100px">
-          <el-form-item label="模板名称：">
-            <el-input v-model="form.templateName"></el-input>
-          </el-form-item>
-          <el-form-item label="期数：">
-            <el-select v-model="form.stages" :disabled="disabled " placeholder="请选择期数" style="width: 100%">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="首付款：">
-            <el-input v-model="form.downPayment" type="number"></el-input>
-          </el-form-item>
-          <el-form-item label="服务费：">
-            <el-input v-model="form.platform" type="number"></el-input>
-          </el-form-item>
-          <el-form-item label="利率：">
-            <el-input v-model="form.firstRate" type="number"></el-input>
-          </el-form-item>
+        <el-form ref="form" label-width="72px">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="模板名称:">
+                <el-input v-model="option.templateName" style="width: 456px"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-for="(o, index) in option.num" :key="index">
+            <el-col :span="5">
+              <el-form-item label="期数:">
+                <el-select v-model="o.stages" size="mini" @change="ban(o.stages)" :disabled="o.disabled " placeholder="" style="width: 100%">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :disabled="item.disabled"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="首付款:">
+                <el-radio-group v-model="o.rateFlag">
+                  <el-radio :label="1"><el-input size="mini" v-model="o.period" style="width: 55px"/>期</el-radio>
+                  <el-radio :label="2"><el-input size="mini" v-model="o.percent" style="width: 55px"/>成</el-radio>
+                </el-radio-group>
+                <!-- <el-input size="mini" v-model="form.downPayment" type="number"></el-input> -->
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="服务费:">
+                <el-input size="mini" v-model="o.downPayment" type="number"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="利率:">
+                <el-input size="mini" v-model="o.platform" type="number"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <img src="../../../assets/img/addBlue.png" :class="{stop: option.num.length === 3}" alt="" @click="addNewOne">
+              <img src="../../../assets/img/deleteRed.png" alt="" :class="{stop: option.num.length === 1}" @click="deleteOne(index, o.stages)">
+            </el-col>
+          </el-row>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -115,15 +162,18 @@ export default {
       options: [
         {
           label: '3期',
-          value: 3
+          value: 3,
+          disabled: false
         },
         {
           label: '6期',
-          value: 6
+          value: 6,
+          disabled: false
         },
         {
           label: '12期',
-          value: 12
+          value: 12,
+          disabled: false
         }
       ],
       disabled: false,
@@ -137,12 +187,20 @@ export default {
         pageSizes: [10, 20, 30, 40],
         total: 10
       },
-      form: {
+      option: {
         templateName: '',
-        stages: '',
-        downPayment: '',
-        platform: '',
-        firstRate: ''
+        num: [
+          {
+            stages: '',
+            downPayment: '',
+            platform: '',
+            firstRate: '',
+            rateFlag: 1,
+            disabled: false,
+            period: '',
+            percent: ''
+          }
+        ]
       },
       id: null,
       show: false,
@@ -176,17 +234,46 @@ export default {
       this.title = msg
       if (msg === '新增模板') {
         this.dialogVisible = true
-        this.form = {}
+        this.option = {
+          templateName: '',
+          num: [
+            {
+              stages: '',
+              downPayment: '',
+              platform: '',
+              firstRate: '',
+              rateFlag: 1,
+              disabled: false,
+              period: '',
+              percent: ''
+            }
+          ]
+        }
+        this.options.forEach(v => {
+          v.disabled = false
+        })
         this.disabled = false
       } else {
-        this.disabled = true
-        this.id = id
-        this.$post('/admin/rate/findById', {
-          id: id
+        this.option.templateName = id
+        this.$post('/admin/rate/findByTemplateName', {
+          templateName: id
         }).then(res => {
           if (res.code === 0) {
             this.dialogVisible = true
-            this.form = res.data
+            this.option.num = res.data
+            this.option.num.forEach((v, i) => {
+              v.disabled = true
+              if (v.rateFlag === 1) {
+                v.period = v.firstRate
+              } else {
+                v.percent = v.firstRate
+              }
+              this.options.forEach((m, n) => {
+                if (m.value === v.stages) {
+                  m.disabled = true
+                }
+              })
+            })
           } else if (res.code === 1) {
             this.$notify.error(res.msg)
           }
@@ -204,7 +291,7 @@ export default {
         })
       } else {
         this.all.forEach(v => {
-          id.push(v.rateId)
+          id.push(v.templateName)
         })
         this.$confirm(`此操作将永久删除该信息, 是否继续?`, '提示', {
           confirmButtonText: '确定',
@@ -212,7 +299,7 @@ export default {
           type: 'warning'
         }).then(() => {
           this.$post('/admin/rate/deleteRate', {
-            id: id.toString()
+            templateName: id.toString()
           }).then(res => {
             if (res.code === 0) {
               this.getData()
@@ -249,8 +336,18 @@ export default {
       })
     },
     submit () {
+      this.option.num.forEach(v => {
+        if (v.rateFlag === 1) {
+          v.firstRate = v.period
+        } else {
+          v.firstRate = v.percent
+        }
+      })
       if (this.title === '新增模板') {
-        this.$post('/admin/rate/addRate', this.form).then(res => {
+        this.$post('/admin/rate/addRate', {
+          templateName: this.option.templateName,
+          num: JSON.stringify(this.option.num)
+        }).then(res => {
           if (res.code === 0) {
             this.$notify.success(res.msg)
             this.dialogVisible = false
@@ -261,12 +358,12 @@ export default {
         })
       } else {
         this.$post('/admin/rate/updateRate', {
-          templateName: this.form.templateName,
-          stages: this.form.stages,
-          downPayment: this.form.downPayment,
-          platform: this.form.platform,
-          firstRate: this.form.firstRate,
-          id: this.id
+          templateName: this.form.templateName
+          // stages: this.form.stages,
+          // downPayment: this.form.downPayment,
+          // platform: this.form.platform,
+          // firstRate: this.form.firstRate,
+          // id: this.id
         }).then(res => {
           if (res.code === 0) {
             this.$notify({
@@ -300,7 +397,7 @@ export default {
       this.multipleSelection = []
       this.id = id
       this.$post('/admin/rate/findChannel', {
-        rateId: id
+        templateName: id
       }).then(res => {
         // console.log(res)
         if (res.code === 0) {
@@ -320,7 +417,7 @@ export default {
         channelId += `${v.id},`
       })
       this.$post('/admin/rate/matchChannel', {
-        rateId: this.id,
+        templateName: this.id,
         channelId: channelId
       }).then(res => {
         if (res.code === 0) {
@@ -336,6 +433,33 @@ export default {
             title: '错误',
             message: res.msg
           })
+        }
+      })
+    },
+    addNewOne () {
+      this.option.num.push({
+        stages: '',
+        downPayment: '',
+        platform: '',
+        firstRate: '',
+        rateFlag: 1,
+        disabled: false,
+        period: '',
+        percent: ''
+      })
+    },
+    deleteOne (i, msg) {
+      this.option.num.splice(i, 1)
+      this.options.forEach((m, n) => {
+        if (m.value === msg) {
+          this.options[n].disabled = false
+        }
+      })
+    },
+    ban (msg) {
+      this.options.forEach((m, n) => {
+        if (m.value === msg) {
+          this.options[n].disabled = true
         }
       })
     }
@@ -376,7 +500,15 @@ export default {
   overflow: auto;
   // height: 100%;
   .form {
-    padding: 25px 120px 0 90px;
+    padding: 25px 10px 0 30px;
+    img {
+      width: 17px;
+      height: 17px;
+    }
+    .el-col-3 {
+      line-height: 50px;
+      padding-left: 10px
+    }
   }
   .disabled {
     background: #f5f7fa;
@@ -430,5 +562,18 @@ export default {
       border: none!important;
     }
   }
+}
+.el-radio {
+  display: block;
+  margin: none!important;
+}
+.el-radio+.el-radio{
+  margin-left: 1px;
+  margin-top: 5px;
+}
+.stop {
+  cursor: default;
+  opacity: 0.4;
+  pointer-events: none;
 }
 </style>
