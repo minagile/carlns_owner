@@ -102,7 +102,7 @@
             <th>操作项</th>
           </tr>
           <tr v-for="item in logsAdsList" :key="item.name">
-            <td width="150">{{ item.logTime | timeChange }}</td>
+            <td width="150">{{ item.logTime | timeChange1 }}</td>
             <td>{{ item.logText }}</td>
           </tr>
         </table>
@@ -166,6 +166,10 @@ export default {
     timeChange (data) {
       let date = new Date(data)
       return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate())
+    },
+    timeChange1 (data) {
+      let date = new Date(data)
+      return date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate()) + ' ' + zero(date.getHours()) + ':' + zero(date.getMinutes()) + ':' + zero(date.getSeconds())
     }
   }
 }
