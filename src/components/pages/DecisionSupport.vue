@@ -41,7 +41,25 @@
       <el-col :span="16">
         <div class="grid-content">
           <ChartHeader :title="'用户分析'" :num="10" @dateChage="dateChage" @timeChage="timeChage"/>
-          <div id="scatter1" style="width: 100%;height:448px;"></div>
+          <div id="scatter1" style="width: 60%;height:440px;"></div>
+          <div class="table">
+            <div class="table_a">
+              <div id="charts" style="width: 100%;height:100%;"></div>
+            </div>
+            <div class="table_a">
+              <p>数据展示</p>
+              <el-table :data="tableData" :stripe="true" max-height="185" style="width: 100%">
+                <el-table-column prop="address" label="地区" align="center"></el-table-column>
+                <el-table-column prop="headCount" label="人数" align="center"></el-table-column>
+                <el-table-column prop="amountAvg" label="金额" align="center"></el-table-column>
+                <el-table-column label="区域占比" align="center">
+                  <template slot-scope="scope">
+                    {{ scope.row.percent.toFixed(2) }}
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
         </div>
       </el-col>
       <el-col :span="7">
@@ -120,6 +138,7 @@ export default {
   name: 'DecisionSupport',
   data () {
     return {
+      tableData: [],
       KPIlist: [{}, {}, {}, {}],
       time: '5',
       startTime: '',
@@ -132,8 +151,53 @@ export default {
     this.list.forEach(v => {
       this.getKPIData(v)
     })
+    // this.Barcharts()
   },
   methods: {
+    Barcharts (data) {
+      // console.log(data)
+      var myChart = echarts.init(document.getElementById('charts'))
+      myChart.setOption({
+        color: function (params) {
+          var colorList = [
+            '#3eabe2', '#3ccbdf', '#55cfa1', '#f0d836', '#d1ebfa', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD', '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+          ]
+          return colorList[params.dataIndex]
+        },
+        title: {
+          text: '区域占比'
+        },
+        grid: {
+          left: '10%',
+          top: '15%',
+          right: '10%',
+          bottom: '10%'
+        },
+        xAxis: {
+          show: true,
+          // boundaryGap: false,
+          type: 'category',
+          axisLine: { show: false },
+          axisTick: { show: false }
+          // min: 'dateMin'
+          // data: ['0', '1', '2', '3', '4', '5', '6']
+        },
+        yAxis: {
+          show: true,
+          type: 'value',
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        series: [{
+          data: data,
+          type: 'bar',
+          barWidth: 20,
+          itemStyle: {
+            barBorderRadius: 3
+          }
+        }]
+      })
+    },
     map (i) {
       var myChart = echarts.init(document.getElementById('scatter1'))
       var geoCoordMap = {
@@ -199,26 +263,27 @@ export default {
         return res
       }
       var convertedData = convertData(i)
-      // console.log(convertedData)
-      var y = []
+      console.log(convertedData)
+      // var y = []
       var data = []
-      var x = []
+      // var x = []
       i.forEach((v, k) => {
-        data.push({name: v.address, value: v.percent})
+        data.push([v.address, v.percent])
       })
-      data.forEach((v, k) => {
-        for (var j = 0; j < data.length - 1 - k; j++) {
-          if (data[j].value > data[j + 1].value) {
-            var temp = data[j + 1]
-            data[j + 1] = data[j]
-            data[j] = temp
-          }
-        }
-      })
-      data.forEach(v => {
-        y.push(v.name)
-        x.push(v.value)
-      })
+      // data.forEach((v, k) => {
+      //   for (var j = 0; j < data.length - 1 - k; j++) {
+      //     if (data[j].value > data[j + 1].value) {
+      //       var temp = data[j + 1]
+      //       data[j + 1] = data[j]
+      //       data[j] = temp
+      //     }
+      //   }
+      // })
+      // data.forEach(v => {
+      //   y.push(v.name)
+      //   x.push(v.value)
+      // })
+      this.Barcharts(data)
       // console.log(data)
       // console.log(x)
       // console.log(data)
@@ -236,63 +301,12 @@ export default {
             return '地区：' + val.data.name + '<br />人数: ' + val.data.value[4] + '<br />区域占比: ' + val.data.value[5] + '<br />区域投保总额: ' + val.data.value[6]
           }
         },
-        grid: {
-          right: 40,
-          top: 50,
-          bottom: 40,
-          width: '20%'
-        },
-        xAxis: {
-          type: 'value',
-          scale: true,
-          position: 'top',
-          boundaryGap: false,
-          splitLine: {
-            show: false
-          },
-          // data: x,
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            margin: 2,
-            textStyle: {
-              color: '#a2caf2'
-            }
-          }
-        },
-        yAxis: {
-          type: 'category',
-          //  name: 'TOP 20',
-          nameGap: 16,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#a2caf2'
-            }
-          },
-          axisTick: {
-            show: false,
-            lineStyle: {
-              color: '#a2caf2'
-            }
-          },
-          axisLabel: {
-            interval: 0,
-            textStyle: {
-              color: '#a2caf2'
-            }
-          },
-          data: y
-        },
         geo: { // 这个是重点配置区
           map: 'china', // 表示中国地图
           roam: true,
-          left: '10',
-          right: '35%',
+          left: '-300',
+          right: '-100',
+          // center: [117.98, 31.20],
           label: {
             normal: {
               show: false, // 是否显示对应地名
@@ -321,9 +335,10 @@ export default {
             // symbol: 'pin',
             coordinateSystem: 'geo',
             data: convertedData,
-            symbolSize: function (val) {
-              return Math.max(val[2], 5)
-            },
+            mbolSize: 5,
+            // symolSize: function (val) {
+            //   rebturn Math.max(val[2], 5)
+            // },
             label: {
               normal: {
                 formatter: '{b}',
@@ -358,6 +373,7 @@ export default {
             label: {
               normal: {
                 formatter: function (val) {
+                  console.log(val)
                   return val.data.value[4]
                 },
                 show: true,
@@ -377,19 +393,19 @@ export default {
                 show: true
               }
             }
-          },
-          {
-            id: 'bar',
-            zlevel: 2,
-            type: 'bar',
-            symbol: 'none',
-            itemStyle: {
-              normal: {
-                color: '#FF770030'
-              }
-            },
-            data: data
           }
+          // {
+          //   id: 'bar',
+          //   zlevel: 2,
+          //   type: 'bar',
+          //   symbol: 'none',
+          //   itemStyle: {
+          //     normal: {
+          //       color: '#FF770030'
+          //     }
+          //   },
+          //   data: data
+          // }
         ]
       }
       // console.log(data)
@@ -525,6 +541,7 @@ export default {
           if (data === 'areaCount') {
             // console.log(res)
             // this.getScatterCharts1(res.data)
+            this.tableData = res.data
             this.map(res.data)
           }
           // 性别
@@ -1062,7 +1079,8 @@ export default {
   components: {
     ChartHeader,
     Curve
-  }
+  },
+  filter: {}
 }
 </script>
 
@@ -1120,5 +1138,32 @@ export default {
       height: 100%;
     }
   }
+  #scatter1 {
+    float: left;
+  }
+  .table {
+    float: left;
+    width: 40%;
+    height: 440px;
+    .table_a {
+      // background: #F4F8F9;
+      height: 210px;
+      box-sizing: border-box;
+      border: 1px solid #f9f9fc;
+      margin: 5px;
+      p {
+        background: #d1ebfa;
+        color: #378bca;
+        line-height: 30px;
+        text-indent: 5px;
+      }
+    }
+  }
+}
+.el-table td, .el-table th {
+  padding: 0 !important;
+}
+.el-table td, .el-table th.is-leaf {
+  // height: 20px;
 }
 </style>
