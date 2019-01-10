@@ -373,7 +373,7 @@ export default {
             label: {
               normal: {
                 formatter: function (val) {
-                  console.log(val)
+                  // console.log(val)
                   return val.data.value[4]
                 },
                 show: true,
@@ -839,7 +839,7 @@ export default {
             labelLine: {
               normal: {
                 show: true,
-                length: 30
+                length: 10
               }
             },
             data: data.data
