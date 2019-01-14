@@ -25,21 +25,21 @@
         <el-table-column label="首付款">
           <template slot-scope="scope">
             <p v-for="item in scope.row.msg" :key="item.msg">
-              {{item.downPayment}}
+              {{item.firstRate}}
             </p>
           </template>
         </el-table-column>
         <el-table-column label="服务费">
           <template slot-scope="scope">
             <p v-for="item in scope.row.msg" :key="item.msg">
-              {{item.platform}}
+              {{item.downPayment}}
             </p>
           </template>
         </el-table-column>
         <el-table-column label="利率" min-width="100">
           <template slot-scope="scope">
             <p v-for="item in scope.row.msg" :key="item.msg">
-              {{item.firstRate}}
+              {{item.platform}}
             </p>
           </template>
         </el-table-column>
@@ -114,7 +114,7 @@
             </el-col>
             <el-col :span="3">
               <img src="../../../assets/img/addBlue.png" :class="{stop: option.num.length === 3}" alt="" @click="addNewOne">
-              <img src="../../../assets/img/deleteRed.png" alt="" :class="{stop: option.num.length === 1}" @click="deleteOne(index, o.stages)">
+              <img src="../../../assets/img/deleteRed.png" alt="" :class="{stop: option.num.length === 1}" @click="deleteOne(index, o.stages, o.rateId)">
             </el-col>
           </el-row>
         </el-form>
@@ -198,7 +198,8 @@ export default {
             rateFlag: 1,
             disabled: false,
             period: '',
-            percent: ''
+            percent: '',
+            rateId: ''
           }
         ]
       },
@@ -231,7 +232,11 @@ export default {
       this.all = val
     },
     openDia (msg, id) {
+      this.id = id
       this.title = msg
+      this.options.forEach(v => {
+        v.disabled = false
+      })
       if (msg === '新增模板') {
         this.dialogVisible = true
         this.option = {
@@ -245,13 +250,11 @@ export default {
               rateFlag: 1,
               disabled: false,
               period: '',
-              percent: ''
+              percent: '',
+              rateId: ''
             }
           ]
         }
-        this.options.forEach(v => {
-          v.disabled = false
-        })
         this.disabled = false
       } else {
         this.option.templateName = id
@@ -298,7 +301,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$post('/admin/rate/deleteRate', {
+          this.$post('/admin/rate/deleteTemplate', {
             templateName: id.toString()
           }).then(res => {
             if (res.code === 0) {
@@ -358,7 +361,9 @@ export default {
         })
       } else {
         this.$post('/admin/rate/updateRate', {
-          templateName: this.form.templateName
+          newTemplateName: this.option.templateName,
+          oldTemplateName: this.id,
+          num: JSON.stringify(this.option.num)
           // stages: this.form.stages,
           // downPayment: this.form.downPayment,
           // platform: this.form.platform,
@@ -437,24 +442,66 @@ export default {
       })
     },
     addNewOne () {
-      this.option.num.push({
-        stages: '',
-        downPayment: '',
-        platform: '',
-        firstRate: '',
-        rateFlag: 1,
-        disabled: false,
-        period: '',
-        percent: ''
-      })
+      if (this.option.num.length < 3) {
+        this.option.num.push({
+          stages: '',
+          downPayment: '',
+          platform: '',
+          firstRate: '',
+          rateFlag: 1,
+          disabled: false,
+          period: '',
+          percent: '',
+          rateId: ''
+        })
+      }
     },
-    deleteOne (i, msg) {
-      this.option.num.splice(i, 1)
-      this.options.forEach((m, n) => {
-        if (m.value === msg) {
-          this.options[n].disabled = false
+    deleteOne (i, msg, id) {
+      if (this.option.num.length > 1) {
+        if (id) {
+          this.$confirm(`确认删除此模板?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$post('/admin/rate/deleteRate', {
+              id: id
+            }).then(res => {
+              if (res.code === 0) {
+                this.$notify({
+                  type: 'success',
+                  title: '成功',
+                  message: '删除成功!'
+                })
+                this.option.num.splice(i, 1)
+                this.options.forEach((m, n) => {
+                  if (m.value === msg) {
+                    this.options[n].disabled = false
+                  }
+                })
+              } else {
+                this.$notify({
+                  type: 'error',
+                  title: '错误',
+                  message: res.msg
+                })
+              }
+            })
+          }).catch(() => {
+            this.$notify({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+        } else {
+          this.options.forEach((m, n) => {
+            if (m.value === msg) {
+              this.options[n].disabled = false
+            }
+          })
+          this.option.num.splice(i, 1)
         }
-      })
+      }
     },
     ban (msg) {
       this.options.forEach((m, n) => {
