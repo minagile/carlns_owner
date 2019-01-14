@@ -839,7 +839,7 @@ export default {
             labelLine: {
               normal: {
                 show: true,
-                length: 10
+                length: 15
               }
             },
             data: data.data
