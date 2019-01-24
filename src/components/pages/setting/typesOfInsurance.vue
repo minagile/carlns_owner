@@ -168,6 +168,16 @@ export default {
           money: '',
           checked: false,
           name: '不计免赔险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '玻璃单独破碎险'
+        },
+        {
+          money: '',
+          checked: false,
+          name: '不计免赔率特约险'
         }
       ],
       checked: false,

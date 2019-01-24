@@ -504,10 +504,23 @@ export default {
       }
     },
     ban (msg) {
-      this.options.forEach((m, n) => {
-        if (m.value === msg) {
-          this.options[n].disabled = true
-        }
+      let num = []
+      this.option.num.forEach(v => {
+        num.push(v.stages)
+      })
+      // console.log(num)
+      // this.options.forEach((m, n) => {
+
+      // })
+      console.log(num)
+      num.forEach(v => {
+        this.options.forEach((m, n) => {
+          // if (m.value === v) {
+          //   m.disabled = true
+          // } else {
+          //   m.disabled = false
+          // }
+        })
       })
     }
   },
