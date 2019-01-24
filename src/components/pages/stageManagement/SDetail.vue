@@ -152,7 +152,7 @@ export default {
       this.$fetch('/admin/insure/showOrderDetails', {
         orderId: this.$route.query.id
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.code === 0) {
           this.basicMsg = res.data
           this.tableData = res.data.listShow
