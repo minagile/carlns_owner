@@ -294,7 +294,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$post('/billNote/delete', {
+        this.$post('admin/billNote/delete', {
           id: id
         }).then(res => {
           if (res.code === 0) {
